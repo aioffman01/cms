@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 하드웨어 관리</title>
+  <meta name="description" content="[관리자] 하드웨어 제품 목록을 관리합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">하드웨어 <span>관리</span></h1>
+      <div class="flex gap-2">
+        <span class="badge badge-admin">관리자 전용</span>
+        <a href="form.html" class="btn btn-primary">+ 하드웨어 등록</a>
+      </div>
+    </div>
+    <div class="content-area">
+      <div id="msg-area"></div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">하드웨어 목록</div>
+          <div class="search-wrap">
+            <input class="form-input" type="text" id="search-input"
+                   placeholder="모델명 검색..." style="min-width:200px">
+          </div>
+        </div>
+        <div id="table-area">
+          <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../common/api.js"></script>
+<script src="../common/layout.js"></script>
+<script src="list.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 신규 회원 등록</title>
+  <meta name="description" content="[관리자] 신규 회원을 시스템에 등록합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+</head>
+<body>
+
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">신규 회원 <span>등록</span></h1>
+      <a href="../member/manage.html" class="btn btn-ghost">← 회원 관리로</a>
+    </div>
+
+    <div class="content-area">
+      <div id="msg-area"></div>
+
+      <div class="card" style="max-width:540px">
+        <div class="card-header">
+          <div class="card-title">신규 계정 정보 입력</div>
+        </div>
+        <div class="card-body">
+          <form id="register-form" autocomplete="off" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="reg-id">로그인 아이디 <span class="text-accent">*</span></label>
+              <input class="form-input" type="text" id="reg-id"
+                     placeholder="영문, 숫자, 밑줄 (4~50자)"
+                     autocomplete="username" autofocus>
+              <div class="form-hint">영문, 숫자, 밑줄(_)만 사용 가능합니다.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-pw">초기 비밀번호 <span class="text-accent">*</span></label>
+              <input class="form-input" type="password" id="reg-pw"
+                     placeholder="6자 이상 입력"
+                     autocomplete="new-password">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-pw2">비밀번호 확인 <span class="text-accent">*</span></label>
+              <input class="form-input" type="password" id="reg-pw2"
+                     placeholder="동일하게 한 번 더 입력"
+                     autocomplete="new-password">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="reg-name">회원 이름 <span class="text-accent">*</span></label>
+              <input class="form-input" type="text" id="reg-name"
+                     placeholder="이름을 입력하세요">
+            </div>
+            <div class="form-actions">
+              <a href="../member/manage.html" class="btn btn-ghost">취소</a>
+              <button class="btn btn-primary" type="submit" id="btn-register">
+                등록 완료
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../common/api.js"></script>
+<script src="../common/layout.js"></script>
+<script src="register.js"></script>
+</body>
+</html>

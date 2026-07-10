@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 고객 목록</title>
+  <meta name="description" content="등록된 고객 목록을 조회합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+</head>
+<body>
+
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">고객 <span>목록</span></h1>
+      <div class="flex gap-2">
+        <a href="form.html" class="btn btn-primary" id="btn-add-customer">+ 고객 등록</a>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <!-- 통계 (관리자용) -->
+      <div id="stats-area" class="stats-bar hidden"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">등록 고객</div>
+          <div class="search-wrap">
+            <input class="form-input" type="text" id="search-input"
+                   placeholder="회사명 또는 담당자 검색..." style="min-width:220px">
+          </div>
+        </div>
+        <div id="table-area">
+          <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 숨김 확인 모달 -->
+<div class="modal-overlay" id="hide-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-title" id="modal-title">고객 상태 변경</div>
+    <div class="modal-body">
+      <p id="modal-msg"></p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modal-cancel">취소</button>
+      <button class="btn btn-danger" id="modal-confirm">확인</button>
+    </div>
+  </div>
+</div>
+
+<script src="../common/api.js"></script>
+<script src="../common/layout.js"></script>
+<script src="list.js"></script>
+</body>
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS API Specification Reference</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+    :root {
+      --bg: #030712;
+      --bg-card: #111827;
+      --accent: #14b8a6;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+      --font: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 15px;
+      letter-spacing: 0.5px;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 32px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 0 12px rgba(20, 184, 166, 0.08);
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(20, 184, 166, 0.04);
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 1px;
+      padding: 14px 18px;
+      border-bottom: 2px solid rgba(20, 184, 166, 0.2);
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .method {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-align: center;
+      min-width: 60px;
+    }
+
+    .method.post { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+    .method.get { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+    .method.put { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+    .method.delete { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+
+    .path {
+      font-family: monospace;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 700;
+    }
+    .badge.admin { background: rgba(20, 184, 166, 0.15); color: var(--accent); }
+    .badge.user { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
+    .badge.all { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+
+    .params {
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: pre-line;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>CMS API Specification Reference</h1>
+    <p>기업 고객 관리 시스템(CMS) 백엔드 API 규격 테이블 문서</p>
+  </header>
+
+  <!-- 1. 회원 관련 API -->
+  <h2>1. 회원 및 인증 관련 API (Member)</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px;">HTTP</th>
+          <th style="width: 220px;">API 경로</th>
+          <th style="width: 100px;">권한 등급</th>
+          <th>요청 파라미터 (JSON Body / Query)</th>
+          <th>기능 설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td><span class="path">/backend/member/register.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">login_id: string (아이디)<br>password: string (비밀번호)<br>name: string (이름)</td>
+          <td>신규 사용자 계정을 시스템에 등록합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td><span class="path">/backend/member/login.php</span></td>
+          <td><span class="badge all">전체 허용</span></td>
+          <td class="params">login_id: string<br>password: string</td>
+          <td>아이디 및 패스워드로 로그인 처리 후 세션을 생성합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td><span class="path">/backend/member/logout.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">-</td>
+          <td>현재 로그인 세션을 파괴하고 로그아웃 처리합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/member/me.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">-</td>
+          <td>현재 세션의 로그인 사용자 정보(ID, 역할, 이름)를 반환합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/member/update.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">name: string (필수)<br>password: string (선택)</td>
+          <td>내 프로필 정보(이름, 새 비밀번호)를 수정합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/member/list.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">-</td>
+          <td>가입되어 있는 전체 회원 목록을 조회합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/member/set_role.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">member_id: int (회원 ID)<br>role: string ("admin"|"user")</td>
+          <td>특정 회원의 시스템 권한 등급을 강제로 조정합니다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. 고객 및 제품 관련 API -->
+  <h2>2. 고객 정보 및 설치 제품 API (Customer & Product)</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px;">HTTP</th>
+          <th style="width: 220px;">API 경로</th>
+          <th style="width: 100px;">권한 등급</th>
+          <th>요청 파라미터 (JSON Body / Query)</th>
+          <th>기능 설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/customer/list.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">-</td>
+          <td>고객 목록을 반환합니다. 일반 계정은 숨김 상태인 고객이 제외됩니다. (관리자는 전체 및 상태별 통계 포함)</td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/customer/get.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">id: int (고객 고유 ID, Query)</td>
+          <td>선택한 특정 고객의 상세 프로필 정보를 조회합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td><span class="path">/backend/customer/create.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">company_name: string (필수)<br>company_addr: string<br>contact_name: string<br>contact_phone: string<br>contact_email: string</td>
+          <td>신규 기업 고객 정보를 등록합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/customer/update.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">id: int (고객 ID)<br>company_name: string (필수)<br>company_addr, contact_name 등</td>
+          <td>기존 등록된 특정 고객사 기본 정보를 수정합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/customer/hide.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">id: int (고객 ID)<br>is_hidden: boolean (숨김 여부)</td>
+          <td>특정 고객을 일반 사원 목록에서 안 보이도록 숨기거나 활성화합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/product/list.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">customer_id: int (고객 ID, Query)</td>
+          <td>해당 기업 고객에게 판매/설치된 제품 목록을 조회합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/product/get.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">id: int (제품 ID, Query)</td>
+          <td>제품 및 연동된 하드웨어 세부 사양 정보를 단건 조회합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td><span class="path">/backend/product/create.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">customer_id: int<br>model_name: string (필수)<br>license: string<br>os_type: string (설치 OS)<br>hardware_id: int (선택)<br>installed_at: string (설치일)</td>
+          <td>고객 프로필에 설치된 신규 제품 정보를 등록합니다. (달력 UI 지원)</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/product/update.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">id: int (제품 ID)<br>model_name: string (필수)<br>license, os_type, hardware_id, installed_at</td>
+          <td>고객에게 기설치된 제품 및 OS, 설치일 정보를 갱신합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method delete">DELETE</span></td>
+          <td><span class="path">/backend/product/delete.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">id: int (제품 ID)</td>
+          <td>등록된 설치 제품 정보를 삭제합니다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3. 하드웨어 관련 API -->
+  <h2>3. 하드웨어 모델 API (Hardware)</h2>
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 80px;">HTTP</th>
+          <th style="width: 220px;">API 경로</th>
+          <th style="width: 100px;">권한 등급</th>
+          <th>요청 파라미터 (JSON Body / Query)</th>
+          <th>기능 설명</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/hardware/list.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">-</td>
+          <td>전체 하드웨어 모델 목록을 반환합니다. 일반 직원은 활성(`is_active=1`) 상태인 모델만 선택 가능합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method get">GET</span></td>
+          <td><span class="path">/backend/hardware/get.php</span></td>
+          <td><span class="badge user">로그인 회원</span></td>
+          <td class="params">id: int (하드웨어 ID, Query)</td>
+          <td>특정 하드웨어의 상세 명세(CPU 수, DISK, NIC, 비고 등)를 상세 조회합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method post">POST</span></td>
+          <td><span class="path">/backend/hardware/create.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">model_name: string (필수)<br>cpu_count: int<br>disk_tb: float<br>nic_count: int<br>note: string</td>
+          <td>신규 판매 가능 하드웨어 장비 스펙 정보를 카탈로그에 등록합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/hardware/update.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">id: int (하드웨어 ID)<br>model_name: string (필수)<br>cpu_count, disk_tb, nic_count, note 등</td>
+          <td>장비 스펙 사양이나 비고 항목을 갱신합니다.</td>
+        </tr>
+        <tr>
+          <td><span class="method put">PUT</span></td>
+          <td><span class="path">/backend/hardware/toggle.php</span></td>
+          <td><span class="badge admin">관리자 전용</span></td>
+          <td class="params">id: int (하드웨어 ID)</td>
+          <td>하드웨어 장비의 판매 활성/비활성 상태(`is_active` 0/1)를 스위치 토글 전환합니다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

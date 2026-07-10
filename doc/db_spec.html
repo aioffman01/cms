@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS Database Schema Specification</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+    :root {
+      --bg: #030712;
+      --bg-sidebar: #0b0f19;
+      --bg-card: #111827;
+      --accent: #14b8a6;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+      --font: 'Inter', 'Noto Sans KR', sans-serif;
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ─── 좌측 사이드 메뉴 ─── */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      padding: 32px 16px;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .logo-area {
+      margin-bottom: 36px;
+      padding: 0 12px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .nav-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 0 12px 8px;
+      opacity: 0.6;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: rgba(20, 184, 166, 0.08);
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(16, 185, 129, 0.1));
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ─── 우측 콘텐츠 영역 ─── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px 48px;
+    }
+
+    header {
+      margin-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* 테이블 섹션 단위 제어 */
+    .table-section {
+      display: none; /* 기본 숨김 */
+      animation: fadeIn 0.3s ease;
+    }
+
+    .table-section.active {
+      display: block; /* 활성화 시 노출 */
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 0 12px rgba(20, 184, 166, 0.08);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.01);
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(20, 184, 166, 0.04);
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 10.5px;
+      letter-spacing: 1px;
+      padding: 12px 18px;
+      border-bottom: 2px solid rgba(20, 184, 166, 0.15);
+    }
+
+    td {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.01);
+    }
+
+    .key {
+      font-weight: 700;
+      color: var(--accent-blue);
+    }
+
+    .type {
+      font-family: monospace;
+      color: #34d399;
+    }
+
+    .default {
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+
+    .desc {
+      color: #ffffff;
+    }
+
+    .nullable {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .init-data-box {
+      font-family: monospace;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 14px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      color: #e5e7eb;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 좌측 네비게이션 바 -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo">CMS DB Spec</div>
+    <div class="logo-sub">Database Specification</div>
+  </div>
+  
+  <div class="nav-label">테이블 목록</div>
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a class="nav-link active" onclick="showTable('member')">member (회원)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" onclick="showTable('customer')">customer (고객사)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" onclick="showTable('hardware')">hardware (하드웨어)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" onclick="showTable('product')">product (설치 제품)</a>
+    </li>
+  </ul>
+</aside>
+
+<!-- 우측 콘텐츠 영역 -->
+<main class="main-content">
+  <header>
+    <h1 id="main-header-title">Database Specification: member</h1>
+    <p>선택한 테이블의 스키마 명세 및 초기 데이터 삽입 스크립트</p>
+  </header>
+
+  <!-- ==================== 1. MEMBER TABLE ==================== -->
+  <section id="sec-member" class="table-section active">
+    <h2>회원 테이블 (member)</h2>
+    <div class="card">
+      <div class="card-header">Table Schema: member</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">고유 식별 회원 번호 (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">login_id</td>
+            <td class="type">VARCHAR(50)</td>
+            <td>NO</td>
+            <td>UNI</td>
+            <td class="default">None</td>
+            <td class="desc">로그인 아이디 (중복 불가)</td>
+          </tr>
+          <tr>
+            <td class="key">password</td>
+            <td class="type">VARCHAR(255)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">해싱 암호화된 비밀번호 (bcrypt)</td>
+          </tr>
+          <tr>
+            <td class="key">name</td>
+            <td class="type">VARCHAR(100)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">사용자 이름</td>
+          </tr>
+          <tr>
+            <td class="key">role</td>
+            <td class="type">ENUM('admin', 'user')</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">'user'</td>
+            <td class="desc">권한 등급 ('admin' = 관리자, 'user' = 일반사용자)</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">계정 등록 시각</td>
+          </tr>
+          <tr>
+            <td class="key">updated_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">계정 수정 시각 (ON UPDATE CURRENT_TIMESTAMP)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="background: rgba(0,0,0,0.1)">member 초기 삽입 데이터</div>
+      <div style="padding: 20px;">
+        <div class="init-data-box">-- 시스템 최초 구동 시 setup.php를 통해 자동 등록되는 최초 최고 관리자 정보
+INSERT INTO `member` (`id`, `login_id`, `password`, `name`, `role`) 
+VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admin');</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 2. CUSTOMER TABLE ==================== -->
+  <section id="sec-customer" class="table-section">
+    <h2>고객사 테이블 (customer)</h2>
+    <div class="card">
+      <div class="card-header">Table Schema: customer</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">고객사 고유 ID (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">company_name</td>
+            <td class="type">VARCHAR(200)</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">None</td>
+            <td class="desc">고객사 회사 이름</td>
+          </tr>
+          <tr>
+            <td class="key">company_addr</td>
+            <td class="type">VARCHAR(500)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">''</td>
+            <td class="desc">회사 소재지 주소</td>
+          </tr>
+          <tr>
+            <td class="key">contact_name</td>
+            <td class="type">VARCHAR(100)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">''</td>
+            <td class="desc">고객사 담당 대표자 이름</td>
+          </tr>
+          <tr>
+            <td class="key">contact_phone</td>
+            <td class="type">VARCHAR(20)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">''</td>
+            <td class="desc">대표 연락처 전화번호</td>
+          </tr>
+          <tr>
+            <td class="key">contact_email</td>
+            <td class="type">VARCHAR(200)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">''</td>
+            <td class="desc">대표 이메일 주소</td>
+          </tr>
+          <tr>
+            <td class="key">is_hidden</td>
+            <td class="type">TINYINT(1)</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">0</td>
+            <td class="desc">숨김 처리 플래그 (0 = 정상 노출, 1 = 목록 숨김)</td>
+          </tr>
+          <tr>
+            <td class="key">created_by</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">최초 등록 임직원 ID (REFERENCES member(id))</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 등록 시각</td>
+          </tr>
+          <tr>
+            <td class="key">updated_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 수정 시각</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="background: rgba(0,0,0,0.1)">customer 초기 샘플 데이터</div>
+      <div style="padding: 20px;">
+        <div class="init-data-box">INSERT INTO `customer` (`id`, `company_name`, `company_addr`, `contact_name`, `contact_phone`, `contact_email`, `is_hidden`, `created_by`) VALUES
+(1, '(주)샘플기업', '서울시 강남구 테헤란로 123', '홍길동', '02-1234-5678', 'hong@sample.com', 0, 1),
+(2, '테스트 주식회사', '경기도 성남시 분당구 판교로 456', '김철수', '031-987-6543', 'kim@test.co.kr', 0, 1),
+(3, '글로벌 코퍼레이션', '부산시 해운대구 센텀로 789', '이영희', '051-555-4321', 'lee@global.co.kr', 0, 1);</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. HARDWARE TABLE ==================== -->
+  <section id="sec-hardware" class="table-section">
+    <h2>하드웨어 장비 테이블 (hardware)</h2>
+    <div class="card">
+      <div class="card-header">Table Schema: hardware</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">하드웨어 고유 분류 번호 (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">model_name</td>
+            <td class="type">VARCHAR(200)</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">None</td>
+            <td class="desc">장비 모델 이름 (예: PowerEdge R750)</td>
+          </tr>
+          <tr>
+            <td class="key">cpu_count</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">0</td>
+            <td class="desc">CPU 코어/소켓 수</td>
+          </tr>
+          <tr>
+            <td class="key">disk_tb</td>
+            <td class="type">DECIMAL(10,2)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">0.00</td>
+            <td class="desc">총 스토리지 용량 (TB 단위)</td>
+          </tr>
+          <tr>
+            <td class="key">nic_count</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">0</td>
+            <td class="desc">네트워크 포트(NIC) 갯수</td>
+          </tr>
+          <tr>
+            <td class="key">note</td>
+            <td class="type">TEXT</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">비고 / 장비 특이사항</td>
+          </tr>
+          <tr>
+            <td class="key">is_active</td>
+            <td class="type">TINYINT(1)</td>
+            <td>NO</td>
+            <td>MUL (Index)</td>
+            <td class="default">1</td>
+            <td class="desc">사용/판매 가능 여부 (1 = 활성, 0 = 비활성)</td>
+          </tr>
+          <tr>
+            <td class="key">created_by</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">등록 관리자 ID (REFERENCES member(id))</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 등록 시각</td>
+          </tr>
+          <tr>
+            <td class="key">updated_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 수정 시각</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="background: rgba(0,0,0,0.1)">hardware 초기 샘플 데이터</div>
+      <div style="padding: 20px;">
+        <div class="init-data-box">INSERT INTO `hardware` (`id`, `model_name`, `cpu_count`, `disk_tb`, `nic_count`, `note`, `is_active`, `created_by`) VALUES
+(1, 'SuperServer 1U-A100', 2, 10.00, 2, '고성능 1U 서버', 1, 1),
+(2, 'PowerEdge R750', 2, 20.00, 4, 'Dell 엔터프라이즈 서버', 1, 1),
+(3, 'ProLiant DL380 Gen10', 4, 15.00, 4, 'HPE 2U 서버', 1, 1);</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. PRODUCT TABLE ==================== -->
+  <section id="sec-product" class="table-section">
+    <h2>설치 제품 테이블 (product)</h2>
+    <div class="card">
+      <div class="card-header">Table Schema: product</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">판매 설치 제품 일련번호 (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">customer_id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">고객사 ID (REFERENCES customer(id) ON DELETE CASCADE)</td>
+          </tr>
+          <tr>
+            <td class="key">hardware_id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td class="nullable">YES</td>
+            <td>MUL (FK)</td>
+            <td class="default">NULL</td>
+            <td class="desc">연결 하드웨어 ID (REFERENCES hardware(id) ON DELETE SET NULL)</td>
+          </tr>
+          <tr>
+            <td class="key">model_name</td>
+            <td class="type">VARCHAR(200)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">설치된 소프트웨어 제품 모델 이름</td>
+          </tr>
+          <tr>
+            <td class="key">license</td>
+            <td class="type">VARCHAR(500)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">''</td>
+            <td class="desc">소프트웨어 라이센스 정보 / 시리얼 키</td>
+          </tr>
+          <tr>
+            <td class="key">os_type</td>
+            <td class="type">VARCHAR(100)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">''</td>
+            <td class="desc">서버 설치 운영체제 (OS)</td>
+          </tr>
+          <tr>
+            <td class="key">installed_at</td>
+            <td class="type">DATE</td>
+            <td class="nullable">YES</td>
+            <td>MUL (Index)</td>
+            <td class="default">NULL</td>
+            <td class="desc">실 납품/설치된 일자 (달력 UI 바인딩)</td>
+          </tr>
+          <tr>
+            <td class="key">created_by</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">등록 임직원 ID (REFERENCES member(id))</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 등록 시각</td>
+          </tr>
+          <tr>
+            <td class="key">updated_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 수정 시각</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header" style="background: rgba(0,0,0,0.1)">product 초기 샘플 데이터</div>
+      <div style="padding: 20px;">
+        <div class="init-data-box">INSERT INTO `product` (`id`, `customer_id`, `hardware_id`, `model_name`, `license`, `os_type`, `installed_at`, `created_by`) VALUES
+(1, 1, 1, 'CMS Enterprise v2.0', 'ENT-2024-XXXX-0001', 'Rocky Linux 9.2', '2024-01-15', 1),
+(2, 1, 2, 'Security Suite Pro', 'SEC-2024-YYYY-0002', 'Windows Server 2022', '2024-03-20', 1);</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  function showTable(tableKey) {
+    // 1. 메뉴 탭의 Active 상태 제어
+    const links = document.querySelectorAll('.nav-link');
+    links.forEach(l => l.classList.remove('active'));
+
+    const activeLink = Array.from(links).find(l => l.getAttribute('onclick').includes(tableKey));
+    if (activeLink) activeLink.classList.add('active');
+
+    // 2. 우측 테이블 단락 노출 제어
+    const sections = document.querySelectorAll('.table-section');
+    sections.forEach(s => s.classList.remove('active'));
+
+    const activeSection = document.getElementById('sec-' + tableKey);
+    if (activeSection) activeSection.classList.add('active');
+
+    // 3. 타이틀 텍스트 갱신
+    document.getElementById('main-header-title').textContent = 'Database Specification: ' + tableKey;
+  }
+</script>
+</body>
+</html>

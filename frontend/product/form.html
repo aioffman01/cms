@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 판매 제품 등록/수정</title>
+  <meta name="description" content="[관리자] 고객에게 판매된 제품을 등록하거나 수정합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title" id="page-title">판매 제품 <span>등록</span></h1>
+      <a id="btn-back" href="../customer/list.html" class="btn btn-ghost">← 고객 상세로</a>
+    </div>
+    <div class="content-area">
+      <div id="msg-area"></div>
+
+      <!-- 고객 정보 표시 -->
+      <div class="alert alert-info mb-4" id="customer-info-bar" style="display:none">
+        <span>ℹ</span><span id="customer-info-text"></span>
+      </div>
+
+      <div class="card" style="max-width:600px">
+        <div class="card-header">
+          <div class="card-title" id="card-title">새 제품 등록</div>
+        </div>
+        <div class="card-body">
+          <form id="product-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="model-name">제품 모델명 <span class="text-accent">*</span></label>
+              <input class="form-input" type="text" id="model-name"
+                     placeholder="판매된 제품 모델명" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="license">라이센스</label>
+              <input class="form-input" type="text" id="license"
+                     placeholder="라이센스 키 또는 정보">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="os-type">설치 OS</label>
+              <input class="form-input" type="text" id="os-type"
+                     placeholder="예) Rocky Linux 9.2, Windows Server 2022">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="hardware-id">연결 하드웨어 (선택)</label>
+              <select class="form-select" id="hardware-id">
+                <option value="">-- 하드웨어 선택 안 함 --</option>
+              </select>
+              <div class="form-hint">판매 제품에 연결된 하드웨어를 선택하세요.</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="installed-at">설치일</label>
+              <input class="form-input" type="date" id="installed-at">
+            </div>
+            <div class="form-actions">
+              <a id="cancel-btn" href="../customer/list.html" class="btn btn-ghost">취소</a>
+              <button class="btn btn-primary" type="submit" id="btn-submit">저장</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="../common/api.js"></script>
+<script src="../common/layout.js"></script>
+<script src="form.js"></script>
+</body>
+</html>

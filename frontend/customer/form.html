@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 고객 등록/수정</title>
+  <meta name="description" content="고객 정보를 등록하거나 수정합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+</head>
+<body>
+
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title" id="page-title">고객 <span>등록</span></h1>
+      <a href="list.html" class="btn btn-ghost">← 목록으로</a>
+    </div>
+
+    <div class="content-area">
+      <div id="msg-area"></div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title" id="card-title">새 고객 등록</div>
+        </div>
+        <div class="card-body">
+          <form id="customer-form" novalidate>
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label class="form-label" for="company-name">회사명 <span class="text-accent">*</span></label>
+                <input class="form-input" type="text" id="company-name"
+                       placeholder="회사명을 입력하세요" required>
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label" for="company-addr">회사 주소</label>
+                <input class="form-input" type="text" id="company-addr"
+                       placeholder="회사 주소를 입력하세요">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contact-name">담당자 이름</label>
+                <input class="form-input" type="text" id="contact-name"
+                       placeholder="담당자 이름">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="contact-phone">담당자 전화번호</label>
+                <input class="form-input" type="tel" id="contact-phone"
+                       placeholder="예) 02-1234-5678">
+              </div>
+              <div class="form-group full-width">
+                <label class="form-label" for="contact-email">담당자 이메일</label>
+                <input class="form-input" type="email" id="contact-email"
+                       placeholder="예) contact@company.com">
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <a href="list.html" class="btn btn-ghost">취소</a>
+              <button class="btn btn-primary" type="submit" id="btn-submit">
+                저장
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../common/api.js"></script>
+<script src="../common/layout.js"></script>
+<script src="form.js"></script>
+</body>
+</html>

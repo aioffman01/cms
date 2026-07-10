@@ -1,0 +1,122 @@
+/**
+ * form.js — [관리자] 판매 제품 등록/수정 페이지
+ * URL 파라미터:
+ *   ?customer_id=N         → 신규 등록
+ *   ?id=N&customer_id=N   → 수정
+ */
+
+const params     = new URLSearchParams(location.search);
+const productId  = params.get('id') ? parseInt(params.get('id')) : null;
+const customerId = params.get('customer_id') ? parseInt(params.get('customer_id')) : null;
+const isEdit     = productId !== null;
+
+const msgArea  = document.getElementById('msg-area');
+const form     = document.getElementById('product-form');
+const btnSubmit = document.getElementById('btn-submit');
+
+// 뒤로가기 링크를 고객 상세 페이지로 설정
+if (customerId) {
+  const backUrl = `../customer/detail.html?id=${customerId}`;
+  document.getElementById('btn-back').href   = backUrl;
+  document.getElementById('cancel-btn').href = backUrl;
+}
+
+(async () => {
+  const user = await initLayout('customer-list');
+  if (!user) return;
+  if (user.role !== 'admin') {
+    showAlert(msgArea, '관리자만 접근 가능합니다.', 'error'); return;
+  }
+
+  // 하드웨어 목록 로드 (활성만)
+  await loadHardwareOptions();
+
+  if (isEdit) {
+    document.getElementById('page-title').innerHTML = '판매 제품 <span>수정</span>';
+    document.getElementById('card-title').textContent = '제품 정보 수정';
+    btnSubmit.textContent = '수정 저장';
+    await loadProduct();
+  } else if (customerId) {
+    // 고객 정보 표시
+    showCustomerInfo(customerId);
+  }
+})();
+
+async function loadHardwareOptions() {
+  const res = await API.get('/hardware/list.php');
+  if (!res.success) return;
+  const sel = document.getElementById('hardware-id');
+  (res.data || []).forEach(h => {
+    const opt = document.createElement('option');
+    opt.value       = h.id;
+    opt.textContent = `${h.model_name}  (CPU:${h.cpu_count} / DISK:${parseFloat(h.disk_tb).toFixed(1)}TB / NIC:${h.nic_count})`;
+    sel.appendChild(opt);
+  });
+}
+
+async function loadProduct() {
+  const res = await API.get('/product/get.php', { id: productId });
+  if (!res.success) { showAlert(msgArea, res.message, 'error'); return; }
+  const p = res.data;
+  document.getElementById('model-name').value   = p.model_name   || '';
+  document.getElementById('license').value      = p.license      || '';
+  document.getElementById('os-type').value      = p.os_type      || '';
+  document.getElementById('installed-at').value = p.installed_at || '';
+  if (p.hardware_id) document.getElementById('hardware-id').value = p.hardware_id;
+
+  // 고객 정보 표시
+  if (p.customer_id) showCustomerInfo(p.customer_id);
+}
+
+async function showCustomerInfo(cid) {
+  const res = await API.get('/customer/get.php', { id: cid });
+  if (res.success) {
+    const bar = document.getElementById('customer-info-bar');
+    document.getElementById('customer-info-text').textContent =
+      `대상 고객: ${res.data.company_name}`;
+    bar.style.display = 'flex';
+  }
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const modelName = document.getElementById('model-name').value.trim();
+  if (!modelName) { showAlert(msgArea, '제품 모델명은 필수 항목입니다.', 'error'); return; }
+
+  const payload = {
+    model_name:   modelName,
+    license:      document.getElementById('license').value.trim(),
+    os_type:      document.getElementById('os-type').value.trim(),
+    hardware_id:  document.getElementById('hardware-id').value || null,
+    installed_at: document.getElementById('installed-at').value || null,
+  };
+
+  setLoading(true);
+
+  let res;
+  if (isEdit) {
+    res = await API.put('/product/update.php', { id: productId, ...payload });
+  } else {
+    if (!customerId) { showAlert(msgArea, 'customer_id가 없습니다.', 'error'); setLoading(false); return; }
+    res = await API.post('/product/create.php', { customer_id: customerId, ...payload });
+  }
+
+  if (res.success) {
+    showAlert(msgArea, res.message, 'success');
+    setTimeout(() => {
+      const cid = customerId || (isEdit ? null : null);
+      window.location.href = cid
+        ? `../customer/detail.html?id=${cid}`
+        : '../customer/list.html';
+    }, 700);
+  } else {
+    showAlert(msgArea, res.message || '저장 실패', 'error');
+    setLoading(false);
+  }
+});
+
+function setLoading(on) {
+  btnSubmit.disabled    = on;
+  btnSubmit.textContent = on ? '저장 중...' : (isEdit ? '수정 저장' : '저장');
+}
