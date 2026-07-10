@@ -32,9 +32,6 @@ function renderSidebar(user, activePage) {
     <li class="nav-item ${activePage === 'customer-list'   ? 'active' : ''}">
       <a href="../customer/list.html"><span class="nav-icon">▤</span><span>고객 목록</span></a>
     </li>
-    <li class="nav-item ${activePage === 'customer-create' ? 'active' : ''}">
-      <a href="../customer/form.html"><span class="nav-icon">✚</span><span>고객 등록</span></a>
-    </li>
 
     <li class="nav-section-label">내 계정</li>
     <li class="nav-item ${activePage === 'profile' ? 'active' : ''}">

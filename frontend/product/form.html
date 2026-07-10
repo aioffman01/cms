@@ -35,9 +35,9 @@
                      placeholder="판매된 제품 모델명" required>
             </div>
             <div class="form-group">
-              <label class="form-label" for="license">라이센스</label>
+              <label class="form-label" for="license">제품 버전</label>
               <input class="form-input" type="text" id="license"
-                     placeholder="라이센스 키 또는 정보">
+                     placeholder="예) v2.0, Enterprise Edition">
             </div>
             <div class="form-group">
               <label class="form-label" for="os-type">설치 OS</label>
@@ -53,7 +53,11 @@
             </div>
             <div class="form-group">
               <label class="form-label" for="installed-at">설치일</label>
-              <input class="form-input" type="date" id="installed-at">
+              <input class="form-input" type="date" id="installed-at" placeholder="YYYY-MM-DD" pattern="\d{4}-\d{2}-\d{2}" maxlength="10">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="description">기타사항</label>
+              <textarea class="form-input" id="description" rows="4" placeholder="기타 설치 관련 특이사항이나 메모 입력" style="resize: vertical; min-height: 80px;"></textarea>
             </div>
             <div class="form-actions">
               <a id="cancel-btn" href="../customer/list.html" class="btn btn-ghost">취소</a>
@@ -65,7 +69,7 @@
     </div>
   </main>
 </div>
-<script src="../common/api.js"></script>
+<script src="../common/api.js?v=3"></script>
 <script src="../common/layout.js"></script>
 <script src="form.js"></script>
 </body>

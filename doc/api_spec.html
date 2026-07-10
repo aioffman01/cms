@@ -5,10 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMS API Specification Reference</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-
     :root {
       --bg: #030712;
+      --bg-sidebar: #0b0f19;
       --bg-card: #111827;
       --accent: #14b8a6;
       --accent-green: #10b981;
@@ -16,7 +15,8 @@
       --text: #f3f4f6;
       --text-muted: #9ca3af;
       --border: rgba(255, 255, 255, 0.08);
-      --font: 'Inter', 'Noto Sans KR', sans-serif;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Malgun Gothic", sans-serif;
+      --radius: 8px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,41 +24,130 @@
       font-family: var(--font);
       background-color: var(--bg);
       color: var(--text);
-      padding: 40px 20px;
-      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
     }
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
+    /* ─── 좌측 사이드 메뉴 ─── */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: 0; bottom: 0; left: 0;
+      padding: 32px 16px;
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+    }
+
+    .logo-area {
+      margin-bottom: 36px;
+      padding: 0 12px;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo-sub {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+
+    .nav-label {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 16px 12px 8px;
+      opacity: 0.6;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 10px 14px;
+      color: var(--text-muted);
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: var(--radius);
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: rgba(20, 184, 166, 0.08);
+      color: #ffffff;
+    }
+
+    .nav-link.active {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.15), rgba(16, 185, 129, 0.1));
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ─── 우측 콘텐츠 영역 ─── */
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px 48px;
     }
 
     header {
-      margin-bottom: 40px;
+      margin-bottom: 36px;
       border-bottom: 1px solid var(--border);
       padding-bottom: 20px;
     }
 
     h1 {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
-      background: linear-gradient(135deg, var(--accent), var(--accent-green));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
+      color: #ffffff;
+      margin-bottom: 6px;
     }
 
     header p {
       color: var(--text-muted);
-      font-size: 15px;
-      letter-spacing: 0.5px;
+      font-size: 14px;
+    }
+
+    /* 섹션 단위 제어 */
+    .api-section {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .api-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     h2 {
       font-size: 18px;
       font-weight: 700;
       color: #ffffff;
-      margin: 32px 0 16px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -76,16 +165,16 @@
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--radius);
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 0 12px rgba(20, 184, 166, 0.08);
-      margin-bottom: 32px;
+      margin-bottom: 24px;
       overflow: hidden;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 13.5px;
+      font-size: 13px;
       text-align: left;
     }
 
@@ -94,16 +183,16 @@
       color: var(--accent);
       font-weight: 700;
       text-transform: uppercase;
-      font-size: 11px;
+      font-size: 10.5px;
       letter-spacing: 1px;
-      padding: 14px 18px;
-      border-bottom: 2px solid rgba(20, 184, 166, 0.2);
+      padding: 12px 18px;
+      border-bottom: 2px solid rgba(20, 184, 166, 0.15);
     }
 
     td {
-      padding: 14px 18px;
+      padding: 16px 18px;
       border-bottom: 1px solid var(--border);
-      vertical-align: middle;
+      vertical-align: top;
     }
 
     tr:last-child td {
@@ -146,231 +235,882 @@
     .badge.user { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
     .badge.all { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
 
-    .params {
+    /* 예제 박스 컨테이너 (상하 배치) */
+    .example-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .example-box {
+      padding: 12px;
+      background: #000000;
+      border: 1px solid var(--border);
+      border-radius: 6px;
       font-family: monospace;
-      font-size: 12px;
-      color: var(--text-muted);
-      white-space: pre-line;
-      line-height: 1.4;
+      font-size: 11.5px;
+      line-height: 1.5;
+    }
+
+    .example-title {
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: var(--accent);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .example-body {
+      white-space: pre-wrap;
+      color: #e5e7eb;
+    }
+
+    .desc-text {
+      color: #ffffff;
+      font-size: 13.5px;
+      font-weight: 500;
+      margin-bottom: 6px;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
+<!-- 좌측 네비게이션 바 -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div class="logo">CMS Docs</div>
+    <div class="logo-sub">Specification Portal</div>
+  </div>
+
+  <div class="nav-label">문서 목록</div>
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a class="nav-link active" href="api_spec.html">API 명세서</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="db_spec.html">DB 명세서</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="presentation.html">개발 플랫폼 소개</a>
+    </li>
+  </ul>
+  
+  <div class="nav-label">API 그룹</div>
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a class="nav-link inner-link active" onclick="showSection('member')">회원 & 인증 (Member)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link inner-link" onclick="showSection('customer')">고객사 관리 (Customer)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link inner-link" onclick="showSection('hardware')">하드웨어 관리 (Hardware)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link inner-link" onclick="showSection('product')">설치 제품 관리 (Product)</a>
+    </li>
+  </ul>
+</aside>
+
+<!-- 우측 콘텐츠 영역 -->
+<main class="main-content">
   <header>
-    <h1>CMS API Specification Reference</h1>
+    <h1 id="main-header-title">API Specification: 회원 & 인증</h1>
     <p>기업 고객 관리 시스템(CMS) 백엔드 API 규격 테이블 문서</p>
   </header>
 
-  <!-- 1. 회원 관련 API -->
-  <h2>1. 회원 및 인증 관련 API (Member)</h2>
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 80px;">HTTP</th>
-          <th style="width: 220px;">API 경로</th>
-          <th style="width: 100px;">권한 등급</th>
-          <th>요청 파라미터 (JSON Body / Query)</th>
-          <th>기능 설명</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><span class="path">/backend/member/register.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">login_id: string (아이디)<br>password: string (비밀번호)<br>name: string (이름)</td>
-          <td>신규 사용자 계정을 시스템에 등록합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><span class="path">/backend/member/login.php</span></td>
-          <td><span class="badge all">전체 허용</span></td>
-          <td class="params">login_id: string<br>password: string</td>
-          <td>아이디 및 패스워드로 로그인 처리 후 세션을 생성합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><span class="path">/backend/member/logout.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">-</td>
-          <td>현재 로그인 세션을 파괴하고 로그아웃 처리합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/member/me.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">-</td>
-          <td>현재 세션의 로그인 사용자 정보(ID, 역할, 이름)를 반환합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/member/update.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">name: string (필수)<br>password: string (선택)</td>
-          <td>내 프로필 정보(이름, 새 비밀번호)를 수정합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/member/list.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">-</td>
-          <td>가입되어 있는 전체 회원 목록을 조회합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/member/set_role.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">member_id: int (회원 ID)<br>role: string ("admin"|"user")</td>
-          <td>특정 회원의 시스템 권한 등급을 강제로 조정합니다.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- ==================== 1. MEMBER API ==================== -->
+  <section id="sec-member" class="api-section active">
+    <h2>회원 및 인증 관련 API (Member)</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 70px;">HTTP</th>
+            <th style="width: 200px;">API 경로</th>
+            <th style="width: 90px;">권한 등급</th>
+            <th>기능 설명 및 예제 (Request / Response)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><span class="path">/backend/member/register.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">신규 사용자 계정을 시스템에 등록합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "login_id": "user01",
+  "password": "pass1234",
+  "name": "홍길동"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "회원가입이 완료되었습니다.",
+  "data": {
+    "id": 5
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><span class="path">/backend/member/login.php</span></td>
+            <td><span class="badge all">전체 허용</span></td>
+            <td>
+              <div class="desc-text">아이디 및 패스워드로 로그인 처리 후 세션을 생성합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "login_id": "admin",
+  "password": "admin1234"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "로그인 되었습니다.",
+  "data": {
+    "id": 1,
+    "name": "관리자",
+    "role": "admin"
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><span class="path">/backend/member/logout.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">현재 로그인 세션을 파괴하고 로그아웃 처리합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "로그아웃 되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/member/me.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">현재 세션의 로그인 사용자 정보(ID, 역할, 이름)를 반환합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "관리자",
+    "role": "admin"
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/member/update.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">내 프로필 정보(이름, 새 비밀번호)를 수정합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "name": "홍길동",
+  "password": "newPassword123"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "내 정보가 수정되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/member/list.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">가입되어 있는 전체 회원 목록을 조회합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "login_id": "admin",
+      "name": "관리자",
+      "role": "admin",
+      "created_at": "2026-07-10 18:01:31"
+    },
+    {
+      "id": 2,
+      "login_id": "user01",
+      "name": "사원A",
+      "role": "user",
+      "created_at": "2026-07-11 01:23:45"
+    }
+  ]
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/member/set_role.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">특정 회원의 시스템 권한 등급을 강제로 조정합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "member_id": 2,
+  "role": "admin"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "역할 변경이 완료되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-  <!-- 2. 고객 및 제품 관련 API -->
-  <h2>2. 고객 정보 및 설치 제품 API (Customer & Product)</h2>
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 80px;">HTTP</th>
-          <th style="width: 220px;">API 경로</th>
-          <th style="width: 100px;">권한 등급</th>
-          <th>요청 파라미터 (JSON Body / Query)</th>
-          <th>기능 설명</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/customer/list.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">-</td>
-          <td>고객 목록을 반환합니다. 일반 계정은 숨김 상태인 고객이 제외됩니다. (관리자는 전체 및 상태별 통계 포함)</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/customer/get.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">id: int (고객 고유 ID, Query)</td>
-          <td>선택한 특정 고객의 상세 프로필 정보를 조회합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><span class="path">/backend/customer/create.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">company_name: string (필수)<br>company_addr: string<br>contact_name: string<br>contact_phone: string<br>contact_email: string</td>
-          <td>신규 기업 고객 정보를 등록합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/customer/update.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">id: int (고객 ID)<br>company_name: string (필수)<br>company_addr, contact_name 등</td>
-          <td>기존 등록된 특정 고객사 기본 정보를 수정합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/customer/hide.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">id: int (고객 ID)<br>is_hidden: boolean (숨김 여부)</td>
-          <td>특정 고객을 일반 사원 목록에서 안 보이도록 숨기거나 활성화합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/product/list.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">customer_id: int (고객 ID, Query)</td>
-          <td>해당 기업 고객에게 판매/설치된 제품 목록을 조회합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/product/get.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">id: int (제품 ID, Query)</td>
-          <td>제품 및 연동된 하드웨어 세부 사양 정보를 단건 조회합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><span class="path">/backend/product/create.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">customer_id: int<br>model_name: string (필수)<br>license: string<br>os_type: string (설치 OS)<br>hardware_id: int (선택)<br>installed_at: string (설치일)</td>
-          <td>고객 프로필에 설치된 신규 제품 정보를 등록합니다. (달력 UI 지원)</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/product/update.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">id: int (제품 ID)<br>model_name: string (필수)<br>license, os_type, hardware_id, installed_at</td>
-          <td>고객에게 기설치된 제품 및 OS, 설치일 정보를 갱신합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method delete">DELETE</span></td>
-          <td><span class="path">/backend/product/delete.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">id: int (제품 ID)</td>
-          <td>등록된 설치 제품 정보를 삭제합니다.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <!-- ==================== 2. CUSTOMER API ==================== -->
+  <section id="sec-customer" class="api-section">
+    <h2>고객사 정보 API (Customer)</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 70px;">HTTP</th>
+            <th style="width: 200px;">API 경로</th>
+            <th style="width: 90px;">권한 등급</th>
+            <th>기능 설명 및 예제 (Request / Response)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/customer/list.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">고객 목록을 반환합니다. 일반 계정은 숨김 상태인 고객이 제외됩니다. (관리자는 전체 및 상태별 통계 포함)</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "company_name": "(주)샘플기업",
+      "company_addr": "서울시 강남구 테헤란로 123",
+      "contact_name": "홍길동",
+      "contact_phone": "02-1234-5678",
+      "contact_email": "hong@sample.com",
+      "is_hidden": 0,
+      "created_by": 1,
+      "created_by_name": "관리자",
+      "created_at": "2026-07-10 18:01:31",
+      "updated_at": "2026-07-10 18:01:31"
+    }
+  ]
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/customer/get.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">선택한 특정 고객의 상세 프로필 정보를 조회합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Query Parameters</div>
+                    <div class="example-body">?id=1</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": {
+    "id": 1,
+    "company_name": "(주)샘플기업",
+    "company_addr": "서울시 강남구 테헤란로 123",
+    "contact_name": "홍길동",
+    "contact_phone": "02-1234-5678",
+    "contact_email": "hong@sample.com",
+    "is_hidden": 0,
+    "created_by": 1,
+    "created_by_name": "관리자",
+    "created_at": "2026-07-10 18:01:31",
+    "updated_at": "2026-07-10 18:01:31"
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><span class="path">/backend/customer/create.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">신규 기업 고객 정보를 등록합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "company_name": "주식회사 테크앤로",
+  "company_addr": "서울시 마포구 독막로 45",
+  "contact_name": "임꺽정",
+  "contact_phone": "010-9876-5432",
+  "contact_email": "lim@techlaw.com"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "고객 정보가 등록되었습니다.",
+  "data": {
+    "id": 4
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/customer/update.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">기존 등록된 특정 고객사 기본 정보를 수정합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "id": 4,
+  "company_name": "주식회사 테크앤로",
+  "company_addr": "서울시 마포구 신촌로 100",
+  "contact_name": "임꺽정",
+  "contact_phone": "010-9876-1234",
+  "contact_email": "lim_new@techlaw.com"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "고객 정보가 수정되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/customer/hide.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">특정 고객을 일반 사원 목록에서 안 보이도록 숨기거나 활성화합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "id": 1,
+  "is_hidden": true
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "고객 정보 숨김 설정이 변경되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-  <!-- 3. 하드웨어 관련 API -->
-  <h2>3. 하드웨어 모델 API (Hardware)</h2>
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th style="width: 80px;">HTTP</th>
-          <th style="width: 220px;">API 경로</th>
-          <th style="width: 100px;">권한 등급</th>
-          <th>요청 파라미터 (JSON Body / Query)</th>
-          <th>기능 설명</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/hardware/list.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">-</td>
-          <td>전체 하드웨어 모델 목록을 반환합니다. 일반 직원은 활성(`is_active=1`) 상태인 모델만 선택 가능합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method get">GET</span></td>
-          <td><span class="path">/backend/hardware/get.php</span></td>
-          <td><span class="badge user">로그인 회원</span></td>
-          <td class="params">id: int (하드웨어 ID, Query)</td>
-          <td>특정 하드웨어의 상세 명세(CPU 수, DISK, NIC, 비고 등)를 상세 조회합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method post">POST</span></td>
-          <td><span class="path">/backend/hardware/create.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">model_name: string (필수)<br>cpu_count: int<br>disk_tb: float<br>nic_count: int<br>note: string</td>
-          <td>신규 판매 가능 하드웨어 장비 스펙 정보를 카탈로그에 등록합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/hardware/update.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">id: int (하드웨어 ID)<br>model_name: string (필수)<br>cpu_count, disk_tb, nic_count, note 등</td>
-          <td>장비 스펙 사양이나 비고 항목을 갱신합니다.</td>
-        </tr>
-        <tr>
-          <td><span class="method put">PUT</span></td>
-          <td><span class="path">/backend/hardware/toggle.php</span></td>
-          <td><span class="badge admin">관리자 전용</span></td>
-          <td class="params">id: int (하드웨어 ID)</td>
-          <td>하드웨어 장비의 판매 활성/비활성 상태(`is_active` 0/1)를 스위치 토글 전환합니다.</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+  <!-- ==================== 3. HARDWARE API ==================== -->
+  <section id="sec-hardware" class="api-section">
+    <h2>하드웨어 모델 API (Hardware)</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 70px;">HTTP</th>
+            <th style="width: 200px;">API 경로</th>
+            <th style="width: 90px;">권한 등급</th>
+            <th>기능 설명 및 예제 (Request / Response)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/hardware/list.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">전체 하드웨어 모델 목록을 반환합니다. 일반 직원은 활성(`is_active=1`) 상태인 모델만 선택 가능합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "model_name": "SuperServer 1U-A100",
+      "cpu_count": 2,
+      "disk_tb": "10.00",
+      "nic_count": 2,
+      "note": "고성능 1U 서버",
+      "is_active": 1,
+      "created_by": 1,
+      "created_by_name": "관리자",
+      "created_at": "2026-07-11 02:00:00",
+      "updated_at": "2026-07-11 02:00:00"
+    }
+  ]
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/hardware/get.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">특정 하드웨어의 상세 명세(CPU 수, DISK, NIC, 비고 등)를 상세 조회합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Query Parameters</div>
+                    <div class="example-body">?id=1</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": {
+    "id": 1,
+    "model_name": "SuperServer 1U-A100",
+    "cpu_count": 2,
+    "disk_tb": "10.00",
+    "nic_count": 2,
+    "note": "고성능 1U 서버",
+    "is_active": 1,
+    "created_by": 1,
+    "created_by_name": "관리자",
+    "created_at": "2026-07-11 02:00:00",
+    "updated_at": "2026-07-11 02:00:00"
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><span class="path">/backend/hardware/create.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">신규 판매 가능 하드웨어 장비 스펙 정보를 카탈로그에 등록합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "model_name": "PowerEdge R760",
+  "cpu_count": 4,
+  "disk_tb": 32.5,
+  "nic_count": 4,
+  "note": "Dell 2U 랙형 고성능 데이터베이스 서버"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "하드웨어가 등록되었습니다.",
+  "data": {
+    "id": 4
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/hardware/update.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">장비 스펙 사양이나 비고 항목을 갱신합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "id": 4,
+  "model_name": "PowerEdge R760 Enterprise",
+  "cpu_count": 8,
+  "disk_tb": 64.0,
+  "nic_count": 4,
+  "note": "업그레이드 사양 반영"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "하드웨어 정보가 수정되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/hardware/toggle.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">하드웨어 장비의 판매 활성/비활성 상태(`is_active` 0/1)를 스위치 토글 전환합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "id": 1
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "비활성화되었습니다.",
+  "data": {
+    "is_active": false
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
+  <!-- ==================== 4. PRODUCT API ==================== -->
+  <section id="sec-product" class="api-section">
+    <h2>설치 제품 API (Product)</h2>
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 70px;">HTTP</th>
+            <th style="width: 200px;">API 경로</th>
+            <th style="width: 90px;">권한 등급</th>
+            <th>기능 설명 및 예제 (Request / Response)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/product/list.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">해당 기업 고객에게 판매/설치된 제품 목록을 조회합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Query Parameters</div>
+                    <div class="example-body">?customer_id=1</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "customer_id": 1,
+      "hardware_id": 1,
+      "model_name": "CMS Enterprise v2.0",
+      "version": "v2.0.4",
+      "os_type": "Rocky Linux 9.2",
+      "installed_at": "2024-01-15",
+      "created_by": 1,
+      "created_at": "2026-07-11 02:10:00",
+      "updated_at": "2026-07-11 02:10:00",
+      "hw_model": "SuperServer 1U-A100",
+      "created_by_name": "관리자"
+    }
+  ]
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method get">GET</span></td>
+            <td><span class="path">/backend/product/get.php</span></td>
+            <td><span class="badge user">로그인 회원</span></td>
+            <td>
+              <div class="desc-text">제품 및 연동된 하드웨어 세부 사양 정보를 단건 조회합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Query Parameters</div>
+                    <div class="example-body">?id=1</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "data": {
+    "id": 1,
+    "customer_id": 1,
+    "hardware_id": 1,
+    "model_name": "CMS Enterprise v2.0",
+    "version": "v2.0.4",
+    "os_type": "Rocky Linux 9.2",
+    "installed_at": "2024-01-15",
+    "created_by": 1,
+    "created_at": "2026-07-11 02:10:00",
+    "updated_at": "2026-07-11 02:10:00",
+    "hw_model": "SuperServer 1U-A100",
+    "hw_cpu": 2,
+    "hw_disk": "10.00",
+    "hw_nic": 2,
+    "created_by_name": "관리자"
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method post">POST</span></td>
+            <td><span class="path">/backend/product/create.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">고객 프로필에 설치된 신규 제품 정보를 등록합니다. (달력 UI 지원)</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "customer_id": 1,
+  "model_name": "CMS Core Web v3.0",
+  "version": "v3.0.0",
+  "os_type": "Ubuntu 22.04 LTS",
+  "hardware_id": 2,
+  "installed_at": "2026-07-11"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "제품이 등록되었습니다.",
+  "data": {
+    "id": 3
+  }
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method put">PUT</span></td>
+            <td><span class="path">/backend/product/update.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">고객에게 기설치된 제품 및 OS, 설치일 정보를 갱신합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "id": 3,
+  "hardware_id": 3,
+  "model_name": "CMS Core Web v3.1",
+  "version": "v3.1.0",
+  "os_type": "Ubuntu 24.04 LTS",
+  "installed_at": "2026-07-11"
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "제품 정보가 수정되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="method delete">DELETE</span></td>
+            <td><span class="path">/backend/product/delete.php</span></td>
+            <td><span class="badge admin">관리자 전용</span></td>
+            <td>
+              <div class="desc-text">등록된 설치 제품 정보를 삭제합니다.</div>
+              <details style="margin-top: 6px;">
+                <summary style="cursor: pointer; color: var(--accent); font-weight: 600; font-size: 12px;">예제 보기</summary>
+                <div class="example-container">
+                  <div class="example-box">
+                    <div class="example-title">Request Body (JSON)</div>
+                    <div class="example-body">{
+  "id": 3
+}</div>
+                  </div>
+                  <div class="example-box">
+                    <div class="example-title">Response (JSON)</div>
+                    <div class="example-body">{
+  "success": true,
+  "message": "제품 정보가 삭제되었습니다."
+}</div>
+                  </div>
+                </div>
+              </details>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<script>
+  function showSection(sectionKey) {
+    // 1. 메뉴 탭의 Active 상태 제어
+    const links = document.querySelectorAll('.inner-link');
+    links.forEach(l => l.classList.remove('active'));
+
+    const activeLink = Array.from(links).find(l => l.getAttribute('onclick').includes(sectionKey));
+    if (activeLink) activeLink.classList.add('active');
+
+    // 2. 우측 섹션 노출 제어
+    const sections = document.querySelectorAll('.api-section');
+    sections.forEach(s => s.classList.remove('active'));
+
+    const activeSection = document.getElementById('sec-' + sectionKey);
+    if (activeSection) activeSection.classList.add('active');
+
+    // 3. 타이틀 텍스트 갱신
+    let titleText = '회원 & 인증';
+    if (sectionKey === 'customer') titleText = '고객사 관리';
+    else if (sectionKey === 'hardware') titleText = '하드웨어 관리';
+    else if (sectionKey === 'product') titleText = '설치 제품 관리';
+    document.getElementById('main-header-title').textContent = 'API Specification: ' + titleText;
+  }
+</script>
 </body>
 </html>

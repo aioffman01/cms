@@ -21,16 +21,29 @@ const API = {
 
     let url = API_BASE + path;
 
-    if (method === 'GET' && data) {
-      url += '?' + new URLSearchParams(data).toString();
-    } else if (data !== null) {
-      options.headers = { 'Content-Type': 'application/json' };
-      options.body = JSON.stringify(data);
+    // GET 파라미터 또는 캐시 방지 파라미터 추가
+    const params = new URLSearchParams();
+    params.append('_', Date.now()); // 캐시 방지용 타임스탬프
+
+    if (method === 'GET') {
+      if (data) {
+        for (const [key, val] of Object.entries(data)) {
+          params.append(key, val);
+        }
+      }
+      url += '?' + params.toString();
+    } else {
+      url += '?_=' + Date.now(); // POST, PUT, DELETE도 캐시 방지
+      if (data !== null) {
+        options.headers = { 'Content-Type': 'application/json' };
+        options.body = JSON.stringify(data);
+      }
     }
 
     try {
       const response = await fetch(url, options);
-      const json = await response.json();
+      const text = await response.text();
+      const json = JSON.parse(text);
       return json;
     } catch (err) {
       console.error('API 요청 오류:', err);

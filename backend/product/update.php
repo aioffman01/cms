@@ -26,9 +26,10 @@ try {
     $productSQL->update($id, [
         'hardware_id'  => $input['hardware_id']  ?? null,
         'model_name'   => $modelName,
-        'license'      => trim($input['license']      ?? ''),
+        'version'      => trim($input['version']      ?? ''),
         'os_type'      => trim($input['os_type']      ?? ''),
         'installed_at' => trim($input['installed_at'] ?? ''),
+        'description'  => trim($input['description']  ?? ''),
     ]);
     Response::success(null, '제품 정보가 수정되었습니다.');
 } catch (Throwable $e) {

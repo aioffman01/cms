@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMS Database Schema Specification</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
-
     :root {
       --bg: #030712;
       --bg-sidebar: #0b0f19;
@@ -17,7 +15,7 @@
       --text: #f3f4f6;
       --text-muted: #9ca3af;
       --border: rgba(255, 255, 255, 0.08);
-      --font: 'Inter', 'Noto Sans KR', sans-serif;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, "Malgun Gothic", sans-serif;
       --radius: 8px;
     }
 
@@ -258,23 +256,36 @@
 <!-- 좌측 네비게이션 바 -->
 <aside class="sidebar">
   <div class="logo-area">
-    <div class="logo">CMS DB Spec</div>
-    <div class="logo-sub">Database Specification</div>
+    <div class="logo">CMS Docs</div>
+    <div class="logo-sub">Specification Portal</div>
   </div>
+
+  <div class="nav-label">문서 목록</div>
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a class="nav-link" href="api_spec.html">API 명세서</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="db_spec.html">DB 명세서</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="presentation.html">개발 플랫폼 소개</a>
+    </li>
+  </ul>
   
   <div class="nav-label">테이블 목록</div>
   <ul class="nav-menu">
     <li class="nav-item">
-      <a class="nav-link active" onclick="showTable('member')">member (회원)</a>
+      <a class="nav-link inner-link active" onclick="showTable('member')">member (회원)</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" onclick="showTable('customer')">customer (고객사)</a>
+      <a class="nav-link inner-link" onclick="showTable('customer')">customer (고객사)</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" onclick="showTable('hardware')">hardware (하드웨어)</a>
+      <a class="nav-link inner-link" onclick="showTable('hardware')">hardware (하드웨어)</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" onclick="showTable('product')">product (설치 제품)</a>
+      <a class="nav-link inner-link" onclick="showTable('product')">product (설치 제품)</a>
     </li>
   </ul>
 </aside>
@@ -712,7 +723,7 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
 <script>
   function showTable(tableKey) {
     // 1. 메뉴 탭의 Active 상태 제어
-    const links = document.querySelectorAll('.nav-link');
+    const links = document.querySelectorAll('.inner-link');
     links.forEach(l => l.classList.remove('active'));
 
     const activeLink = Array.from(links).find(l => l.getAttribute('onclick').includes(tableKey));

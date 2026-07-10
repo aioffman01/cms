@@ -499,6 +499,19 @@ input, select, textarea { font-family: var(--font); }
 .search-wrap .form-input { max-width: 280px; }
 
 /* ─── Detail Grid ─── */
+.detail-split-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.detail-grid-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -506,15 +519,19 @@ input, select, textarea { font-family: var(--font); }
 }
 
 .detail-item {
-  padding: 16px 20px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 20px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border);
   border-radius: var(--radius);
 }
 .detail-item.full-width { grid-column: 1 / -1; }
 
-.detail-label { font-size: 11px; color: var(--accent-blue); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
-.detail-value { font-size: 14.5px; color: #ffffff; font-weight: 500; word-break: break-all; }
+.detail-label { width: 130px; flex-shrink: 0; font-size: 11px; color: var(--accent-blue); letter-spacing: 1px; text-transform: uppercase; font-weight: 700; }
+.detail-value { font-size: 14px; color: #ffffff; font-weight: 500; word-break: break-all; text-align: left; }
 .detail-value.muted { color: var(--text-muted); font-style: italic; }
 
 /* ─── Modal ─── */
@@ -717,5 +734,6 @@ input, select, textarea { font-family: var(--font); }
   .page-header  { padding: 16px; }
   .form-grid    { grid-template-columns: 1fr; }
   .detail-grid  { grid-template-columns: 1fr; }
+  .detail-split-layout { grid-template-columns: 1fr; }
   .stats-bar    { flex-direction: column; }
 }

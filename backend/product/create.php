@@ -26,9 +26,10 @@ try {
         'customer_id'  => $customerId,
         'hardware_id'  => $input['hardware_id']  ?? null,
         'model_name'   => $modelName,
-        'license'      => trim($input['license']      ?? ''),
+        'version'      => trim($input['version']      ?? ''),
         'os_type'      => trim($input['os_type']      ?? ''),
         'installed_at' => trim($input['installed_at'] ?? ''),
+        'description'  => trim($input['description']  ?? ''),
         'created_by'   => $user['id'],
     ]);
     Response::success(['id' => $id], '제품이 등록되었습니다.');

@@ -86,7 +86,6 @@ function renderTable(customers) {
         <td><a href="detail.html?id=${c.id}" class="text-highlight">${escHtml(c.company_name)}</a></td>
         <td>${escHtml(c.contact_name) || '<span class="text-muted">-</span>'}</td>
         <td>${escHtml(c.contact_phone) || '<span class="text-muted">-</span>'}</td>
-        <td>${escHtml(c.contact_email) || '<span class="text-muted">-</span>'}</td>
         <td>${isAdmin ? hiddenBadge : ''}</td>
         <td>
           <div class="td-actions">
@@ -103,10 +102,9 @@ function renderTable(customers) {
       <table class="data-table">
         <thead>
           <tr>
-            <th>회사명</th>
+            <th style="width: 45%;">회사명</th>
             <th>담당자</th>
             <th>전화번호</th>
-            <th>이메일</th>
             ${isAdmin ? '<th>상태</th>' : '<th></th>'}
             <th>관리</th>
           </tr>

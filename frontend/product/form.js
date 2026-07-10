@@ -59,9 +59,10 @@ async function loadProduct() {
   if (!res.success) { showAlert(msgArea, res.message, 'error'); return; }
   const p = res.data;
   document.getElementById('model-name').value   = p.model_name   || '';
-  document.getElementById('license').value      = p.license      || '';
+  document.getElementById('license').value      = p.version      || '';
   document.getElementById('os-type').value      = p.os_type      || '';
   document.getElementById('installed-at').value = p.installed_at || '';
+  document.getElementById('description').value  = p.description  || '';
   if (p.hardware_id) document.getElementById('hardware-id').value = p.hardware_id;
 
   // 고객 정보 표시
@@ -84,12 +85,19 @@ form.addEventListener('submit', async (e) => {
   const modelName = document.getElementById('model-name').value.trim();
   if (!modelName) { showAlert(msgArea, '제품 모델명은 필수 항목입니다.', 'error'); return; }
 
+  const installedAt = document.getElementById('installed-at').value.trim();
+  if (installedAt && !/^\d{4}-\d{2}-\d{2}$/.test(installedAt)) {
+    showAlert(msgArea, '설치일 형식은 YYYY-MM-DD 이어야 합니다.', 'error');
+    return;
+  }
+
   const payload = {
     model_name:   modelName,
-    license:      document.getElementById('license').value.trim(),
+    version:      document.getElementById('license').value.trim(),
     os_type:      document.getElementById('os-type').value.trim(),
     hardware_id:  document.getElementById('hardware-id').value || null,
-    installed_at: document.getElementById('installed-at').value || null,
+    installed_at: installedAt || null,
+    description:  document.getElementById('description').value.trim(),
   };
 
   setLoading(true);

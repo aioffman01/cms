@@ -11,16 +11,17 @@ class ProductSQL
     {
         $stmt = $this->db->prepare(
             'INSERT INTO `product`
-             (`customer_id`, `hardware_id`, `model_name`, `license`, `os_type`, `installed_at`, `created_by`)
-             VALUES (?, ?, ?, ?, ?, ?, ?)'
+             (`customer_id`, `hardware_id`, `model_name`, `version`, `os_type`, `installed_at`, `description`, `created_by`)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             (int) $data['customer_id'],
             !empty($data['hardware_id']) ? (int) $data['hardware_id'] : null,
             $data['model_name'],
-            $data['license']      ?? '',
+            $data['version']       ?? '',
             $data['os_type']      ?? '',
             !empty($data['installed_at']) ? $data['installed_at'] : null,
+            $data['description']  ?? '',
             (int) $data['created_by'],
         ]);
         return (int) $this->db->lastInsertId();
@@ -31,15 +32,16 @@ class ProductSQL
     {
         $stmt = $this->db->prepare(
             'UPDATE `product`
-             SET `hardware_id`=?, `model_name`=?, `license`=?, `os_type`=?, `installed_at`=?
+             SET `hardware_id`=?, `model_name`=?, `version`=?, `os_type`=?, `installed_at`=?, `description`=?
              WHERE `id`=?'
         );
         return $stmt->execute([
             !empty($data['hardware_id']) ? (int) $data['hardware_id'] : null,
             $data['model_name'],
-            $data['license']      ?? '',
+            $data['version']       ?? '',
             $data['os_type']      ?? '',
             !empty($data['installed_at']) ? $data['installed_at'] : null,
+            $data['description']  ?? '',
             $id,
         ]);
     }

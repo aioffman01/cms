@@ -72,10 +72,11 @@ function renderDetail(c, products) {
       return `
         <tr>
           <td><span class="font-bold">${escHtml(p.model_name)}</span></td>
-          <td>${escHtml(p.license) || '<span class="text-muted">-</span>'}</td>
+          <td>${escHtml(p.version) || '<span class="text-muted">-</span>'}</td>
           <td>${escHtml(p.os_type) || '<span class="text-muted">-</span>'}</td>
           <td>${hwInfo}</td>
           <td>${p.installed_at || '<span class="text-muted">-</span>'}</td>
+          <td style="max-width: 220px; white-space: pre-wrap; word-break: break-all;">${escHtml(p.description) || '<span class="text-muted">-</span>'}</td>
           <td>
             <div class="td-actions">
               ${editBtn}
@@ -95,10 +96,11 @@ function renderDetail(c, products) {
           <thead>
             <tr>
               <th>제품 모델명</th>
-              <th>라이센스</th>
+              <th>제품 버전</th>
               <th>설치 OS</th>
               <th>연결 하드웨어</th>
               <th>설치일</th>
+              <th>기타사항</th>
               <th>관리</th>
             </tr>
           </thead>
@@ -108,77 +110,80 @@ function renderDetail(c, products) {
   }
 
   document.getElementById('content-area').innerHTML = `
-    <div class="card mb-5">
-      <div class="card-header">
-        <div class="card-title flex items-center gap-2">
-          고객 정보: ${escHtml(c.company_name)}${hiddenBadge}
+    <div class="detail-split-layout">
+      <!-- 왼쪽 블록: 고객 기본 정보 -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title flex items-center gap-2">
+            고객 정보: ${escHtml(c.company_name)}${hiddenBadge}
+          </div>
+          <div class="flex gap-2">
+            ${adminActions}
+            <a href="form.html?id=${c.id}" class="btn btn-secondary">수정</a>
+          </div>
         </div>
-        <div class="flex gap-2">
-          ${adminActions}
-          <a href="form.html?id=${c.id}" class="btn btn-secondary">수정</a>
+        <div class="card-body">
+          <div class="detail-grid-vertical">
+            <div class="detail-item">
+              <div class="detail-label">회사명</div>
+              <div class="detail-value">${escHtml(c.company_name)}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">회사 주소</div>
+              <div class="detail-value ${!c.company_addr ? 'muted' : ''}">
+                ${escHtml(c.company_addr) || '(미입력)'}
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">담당자 이름</div>
+              <div class="detail-value ${!c.contact_name ? 'muted' : ''}">
+                ${escHtml(c.contact_name) || '(미입력)'}
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">담당자 전화번호</div>
+              <div class="detail-value ${!c.contact_phone ? 'muted' : ''}">
+                ${c.contact_phone
+                  ? `<a href="tel:${escHtml(c.contact_phone)}" class="text-highlight">${escHtml(c.contact_phone)}</a>`
+                  : '(미입력)'}
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">담당자 이메일</div>
+              <div class="detail-value ${!c.contact_email ? 'muted' : ''}">
+                ${c.contact_email
+                  ? `<a href="mailto:${escHtml(c.contact_email)}" class="text-highlight">${escHtml(c.contact_email)}</a>`
+                  : '(미입력)'}
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">등록자</div>
+              <div class="detail-value">${escHtml(c.created_by_name || '-')}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">등록일</div>
+              <div class="detail-value">${fmtDate(c.created_at)}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">최종 수정일</div>
+              <div class="detail-value">${fmtDate(c.updated_at)}</div>
+            </div>
+            ${isAdmin ? `
+            <div class="detail-item">
+              <div class="detail-label">표시 상태</div>
+              <div class="detail-value">
+                <span class="badge ${isHidden ? 'badge-hidden' : 'badge-visible'}">${isHidden ? '숨김' : '표시'}</span>
+              </div>
+            </div>` : ''}
+          </div>
         </div>
       </div>
-      <div class="card-body">
-        <div class="detail-grid">
-          <div class="detail-item full-width">
-            <div class="detail-label">회사명</div>
-            <div class="detail-value">${escHtml(c.company_name)}</div>
-          </div>
-          <div class="detail-item full-width">
-            <div class="detail-label">회사 주소</div>
-            <div class="detail-value ${!c.company_addr ? 'muted' : ''}">
-              ${escHtml(c.company_addr) || '(미입력)'}
-            </div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">담당자 이름</div>
-            <div class="detail-value ${!c.contact_name ? 'muted' : ''}">
-              ${escHtml(c.contact_name) || '(미입력)'}
-            </div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">담당자 전화번호</div>
-            <div class="detail-value ${!c.contact_phone ? 'muted' : ''}">
-              ${c.contact_phone
-                ? `<a href="tel:${escHtml(c.contact_phone)}" class="text-highlight">${escHtml(c.contact_phone)}</a>`
-                : '(미입력)'}
-            </div>
-          </div>
-          <div class="detail-item full-width">
-            <div class="detail-label">담당자 이메일</div>
-            <div class="detail-value ${!c.contact_email ? 'muted' : ''}">
-              ${c.contact_email
-                ? `<a href="mailto:${escHtml(c.contact_email)}" class="text-highlight">${escHtml(c.contact_email)}</a>`
-                : '(미입력)'}
-            </div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">등록자</div>
-            <div class="detail-value">${escHtml(c.created_by_name || '-')}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">등록일</div>
-            <div class="detail-value">${fmtDate(c.created_at)}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">최종 수정일</div>
-            <div class="detail-value">${fmtDate(c.updated_at)}</div>
-          </div>
-          ${isAdmin ? `
-          <div class="detail-item">
-            <div class="detail-label">표시 상태</div>
-            <div class="detail-value">
-              <span class="badge ${isHidden ? 'badge-hidden' : 'badge-visible'}">${isHidden ? '숨김' : '표시'}</span>
-            </div>
-          </div>` : ''}
-        </div>
-      </div>
-    </div>
 
-    <!-- 설치 제품 영역 -->
-    <div class="card">
-      <div class="card-body">
-        ${productSectionHtml}
+      <!-- 오른쪽 블록: 판매된 제품 정보 -->
+      <div class="card">
+        <div class="card-body">
+          ${productSectionHtml}
+        </div>
       </div>
     </div>`;
 
