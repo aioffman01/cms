@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS 개발 플랫폼 Presentation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+    :root {
+      --bg: #030712;
+      --bg-sidebar: #0b0f19;
+      --bg-card: #111827;
+      --accent: #14b8a6;
+      --accent-green: #10b981;
+      --accent-blue: #3b82f6;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+      --font: 'Inter', 'Noto Sans KR', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* ─── 슬라이드 컨테이너 ─── */
+    .slides-container {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.98) translateY(10px);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: all;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Cosmic background grid */
+    .slides-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(20, 184, 166, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 184, 166, 0.02) 1px, transparent 1px);
+      background-size: 80px 80px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── 슬라이드 콘텐츠 스타일 ─── */
+    .slide-num {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      z-index: 10;
+    }
+
+    .slide-title {
+      font-size: 44px;
+      font-weight: 900;
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 30px;
+      z-index: 10;
+    }
+
+    .slide-title span {
+      background: linear-gradient(135deg, var(--accent), var(--accent-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-content {
+      font-size: 18px;
+      color: var(--text-muted);
+      z-index: 10;
+      max-width: 950px;
+    }
+
+    /* 슬라이드 내부 카드 그리드 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 30px;
+      margin-top: 10px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 10px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 0 16px rgba(20, 184, 166, 0.05);
+      transition: all 0.3s;
+    }
+
+    .card:hover {
+      border-color: rgba(20, 184, 166, 0.3);
+      box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.4), 0 0 20px rgba(20, 184, 166, 0.15);
+    }
+
+    .card h3 {
+      font-size: 18px;
+      color: var(--accent);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .bullet-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 24px;
+      margin-bottom: 10px;
+      font-size: 15.5px;
+      color: var(--text);
+    }
+
+    .bullet-list li::before {
+      content: '✦';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* 표 스타일 */
+    .pt-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13.5px;
+    }
+
+    .pt-table th {
+      color: var(--accent);
+      border-bottom: 2px solid rgba(20, 184, 166, 0.2);
+      padding: 10px;
+      text-align: left;
+    }
+
+    .pt-table td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* ─── 하단 컨트롤 바 ─── */
+    .controls {
+      background: rgba(11, 15, 25, 0.8);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid var(--border);
+      padding: 20px 80px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      margin: 0 40px;
+      border-radius: 2px;
+      position: relative;
+    }
+
+    .progress-bar {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-green));
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    .btn-nav {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: #ffffff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 1px;
+    }
+
+    .btn-nav:hover {
+      background: var(--accent);
+      color: #030712;
+      box-shadow: 0 0 12px rgba(20, 184, 166, 0.3);
+    }
+
+    .slide-indicator {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* 소스코드 트리 텍스트 박스 */
+    .code-tree-box {
+      font-family: monospace;
+      font-size: 12.5px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      color: #34d399;
+      height: 330px;
+      overflow-y: auto;
+      white-space: pre;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<div class="slides-container">
+  
+  <!-- Slide 1: 표지 -->
+  <div class="slide active" id="slide-1">
+    <div class="slide-num">Slide 01</div>
+    <h1 class="slide-title">Enterprise <span>CMS</span><br>개발 플랫폼 구축 전략 발표</h1>
+    <div class="slide-content" style="margin-top: 20px;">
+      <p style="font-size: 22px; color: var(--accent); margin-bottom: 24px; font-weight: 600;">
+        Midnight Aurora 테마 디자인 기반의 2-Tier 분리형 고객/인프라 관리 아키텍처
+      </p>
+      <div style="font-size: 15px; color: var(--text-muted);">
+        발표자: 시스템 개발 아키텍트 | 일자: 2026. 07
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 2: 기획 목적 및 요구사항 -->
+  <div class="slide" id="slide-2">
+    <div class="slide-num">Slide 02</div>
+    <h2 class="slide-title">1. 플랫폼 <span>도입 배경 및 목표</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div class="card">
+          <h3>✦ 고객 관리 체계 고도화</h3>
+          <p>기업 고객 정보의 안전한 등록 및 관리와 함께, 임직원 권한에 기반한 정보 숨김 제어 기능을 지원하여 중요 기업 정보의 보안 노출 리스크를 완전히 통제합니다.</p>
+        </div>
+        <div class="card">
+          <h3>✦ 고객별 인프라 매핑 관리</h3>
+          <p>납품된 하드웨어 장비 스펙 카탈로그와 고객별 소프트웨어 설치 이력(설치 OS, 라이센스 키, 달력 UI 기반 설치일 관리)의 데이터 정합성을 제공합니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 3: 아키텍처 설계 -->
+  <div class="slide" id="slide-3">
+    <div class="slide-num">Slide 03</div>
+    <h2 class="slide-title">2. 시스템 <span>아키텍처 구성</span></h2>
+    <div class="slide-content">
+      <div class="grid-3">
+        <div class="card">
+          <h3>Frontend (UI)</h3>
+          <p>HTML5와 Vanilla JS로 구축되어 백엔드 API만 호출(CORS 허용). 사이드바 레이아웃 공통 모듈화 및 Midnight Aurora CSS 테마 탑재.</p>
+        </div>
+        <div class="card">
+          <h3>Backend (API)</h3>
+          <p>PHP 8.2 기반의 RESTful API 아키텍처. 요청 규격을 공통화(Response)하고 세션 기반 권한 체크 필터를 통과한 데이터만 처리.</p>
+        </div>
+        <div class="card">
+          <h3>DB Layer (SQL)</h3>
+          <p>MySQL 2-Tier 릴레이션 설계. 테이블 단위 쿼리 라이브러리(SQL Class)를 격리 구현하여 비즈니스 로직의 의존성을 완화.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 4: 소스코드 구조 (신규 추가) -->
+  <div class="slide" id="slide-4">
+    <div class="slide-num">Slide 04</div>
+    <h2 class="slide-title">3. 소스코드 <span>디렉토리 구조</span></h2>
+    <div class="slide-content">
+      <div style="display: grid; grid-template-columns: 380px 1fr; gap: 30px;">
+        <div class="code-tree-box">CMS/
+├── openapi/        # API YAML 명세서
+│   ├── member.yaml
+│   └── customer.yaml
+├── backend/        # RESTful API 엔드포인트
+│   ├── member/     # 가입, 로그인, 목록 제어
+│   ├── customer/   # 고객 목록 및 활성 스위칭
+│   ├── product/    # 라이센스 및 OS 설치 이력
+│   └── hardware/   # 카탈로그 등록/수정
+├── frontend/       # SPA 화면 및 스타일시트
+│   ├── common/     # style.css, api.js, layout.js
+│   ├── auth/       # 로그인, 임직원 등록
+│   └── customer/   # 고객 상세 및 제품 리스트
+├── lib_sql/        # PDO기반 테이블 쿼리 클래스
+└── table/          # 스키마 DDL 및 기초 데이터</div>
+        <div class="bullet-list" style="margin-top: 0; display:flex; flex-direction:column; justify-content:center;">
+          <li style="font-size:15px"><strong>openapi/</strong>: FE/BE 개발 약속이 정의된 YAML 명세서 수록.</li>
+          <li style="font-size:15px"><strong>backend/</strong>: PHP 세션 인증(Auth)과 Response 공통 모듈이 호출되는 API 영역.</li>
+          <li style="font-size:15px"><strong>frontend/</strong>: CSS 테마 및 사이드바 공통 렌더링, JSON 비동기 API 통신을 담당하는 UI 영역.</li>
+          <li style="font-size:15px"><strong>lib_sql/</strong>: 테이블별 데이터 연산(SQL) 클래스를 캡슐화하여 비즈니스 레이어 격리.</li>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 5: 데이터베이스 스펙 -->
+  <div class="slide" id="slide-5">
+    <div class="slide-num">Slide 05</div>
+    <h2 class="slide-title">4. 관계형 <span>데이터베이스 스키마</span></h2>
+    <div class="slide-content">
+      <table class="pt-table">
+        <thead>
+          <tr>
+            <th>테이블명</th>
+            <th>역할 설명</th>
+            <th>주요 핵심 컬럼 구성</th>
+            <th>관계 및 매핑 규칙</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:#ffffff; font-weight:700">member</td>
+            <td>임직원 계정 테이블</td>
+            <td>id, login_id, password (bcrypt), role, created_at</td>
+            <td>관리자(admin)와 사원(user) 역할 구분</td>
+          </tr>
+          <tr>
+            <td style="color:#ffffff; font-weight:700">customer</td>
+            <td>고객사 정보 테이블</td>
+            <td>id, company_name, is_hidden, created_by</td>
+            <td>is_hidden=1 시 일반 계정엔 조회 차단</td>
+          </tr>
+          <tr>
+            <td style="color:#ffffff; font-weight:700">hardware</td>
+            <td>장비 카탈로그 테이블</td>
+            <td>id, model_name, cpu_count, disk_tb, nic_count, is_active</td>
+            <td>관리자만 사양 카탈로그 수정 가능</td>
+          </tr>
+          <tr>
+            <td style="color:#ffffff; font-weight:700">product</td>
+            <td>설치 제품 매핑 테이블</td>
+            <td>id, customer_id, hardware_id, os_type, installed_at</td>
+            <td>Customer 1 : N Product (하드웨어 정보 SET NULL 연동)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Slide 6: API 명세 -->
+  <div class="slide" id="slide-6">
+    <div class="slide-num">Slide 06</div>
+    <h2 class="slide-title">5. API <span>설계 및 보안 메커니즘</span></h2>
+    <div class="slide-content">
+      <ul class="bullet-list">
+        <li><strong>역할 기반 접근 제어 (RBAC)</strong>: 회원 등록, 회원 권한 제어, 하드웨어 스펙 추가, 고객사 숨김 스위칭 등 민감한 동작은 <code>Auth::requireAdmin()</code>을 통과한 세션에 한해서만 수행됩니다.</li>
+        <li><strong>입력 유효성 검사 강화</strong>: ID 중복 검사, 패스워드 6자 유효성, 이메일 규격 등을 백엔드 API에서 이중으로 실시간 유효성 체크합니다.</li>
+        <li><strong>보안성 강화</strong>: 세션 고정 공격 방지를 위한 <code>session_regenerate_id()</code> 및 패스워드 bcrypt 일방향 해시 암호화 기본 탑재.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Slide 7: OpenAPI & FE/BE 분리 효과 -->
+  <div class="slide" id="slide-7">
+    <div class="slide-num">Slide 07</div>
+    <h2 class="slide-title">6. OpenAPI <span>기반 분리 아키텍처 효과</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div class="card">
+          <h3>✦ 약속 기반 독립 개발 (Loose Coupling)</h3>
+          <p>API 규약(OpenAPI YAML)을 먼저 선언 후 프론트엔드/백엔드를 분리 개발하여, 상호 코드 간섭과 결합성을 배제하고 병렬 생산성을 극대화했습니다.</p>
+        </div>
+        <div class="card">
+          <h3>✦ 이기종 플랫폼 확장성 확보</h3>
+          <p>백엔드가 순수 JSON API로 작동하므로, 웹 프론트엔드 코드의 변경 없이 즉시 모바일 앱(iOS, Android)이나 외부 시스템과의 데이터 연동이 가능합니다.</p>
+        </div>
+        <div class="card">
+          <h3>✦ 서버 부하 절감 및 보안 격리</h3>
+          <p>렌더링 연산을 브라우저가 전담하여 서버 오버헤드가 크게 줄었으며, DB 접속 정보를 프론트엔드에 노출하지 않아 물리적 보안 장벽을 형성했습니다.</p>
+        </div>
+        <div class="card">
+          <h3>✦ 명확한 이슈 격리 (Debugging)</h3>
+          <p>데이터 전송 문제와 화면 바인딩 문제가 크롬 개발자 도구의 Network 탭을 통해 즉각 파악되어 테스트 리드타임이 대폭 감소했습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Slide 8: 결론 및 비전 -->
+  <div class="slide" id="slide-8">
+    <div class="slide-num">Slide 08</div>
+    <h2 class="slide-title">7. 기대 효과 <span>및 결론</span></h2>
+    <div class="slide-content">
+      <div class="grid">
+        <div class="card">
+          <h3>✦ 뛰어난 유지보수 구조</h3>
+          <p>프론트엔드 HTML과 백엔드 PHP API의 완벽한 2-Tier 격리로, 향후 클라이언트 프레임워크 전환이나 DB 튜닝 시 영향도를 최소화합니다.</p>
+        </div>
+        <div class="card">
+          <h3>✦ 독보적인 사용자 경험 (UX)</h3>
+          <p>Midnight Aurora 스펙에 부합하는 오로라 그라데이션 및 네온 라이팅 효과를 디자인 시스템 수준으로 코딩하여, 기능의 완성도와 심미성을 결합했습니다.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 컨트롤러 하단 바 -->
+<div class="controls">
+  <button class="btn-nav" onclick="prevSlide()">PREV</button>
+  <div class="progress-bar-container">
+    <div class="progress-bar" id="pt-progress"></div>
+  </div>
+  <span class="slide-indicator" id="slide-ind">1 / 8</span>
+  <button class="btn-nav" onclick="nextSlide()">NEXT</button>
+</div>
+
+<script>
+  let currentSlide = 1;
+  const totalSlides = 8;
+
+  function updateSlide() {
+    // 슬라이드 활성화 토글
+    for (let i = 1; i <= totalSlides; i++) {
+      const slide = document.getElementById('slide-' + i);
+      if (i === currentSlide) {
+        slide.classList.add('active');
+      } else {
+        slide.classList.remove('active');
+      }
+    }
+
+    // 하단 인디케이터 및 프로그레스바 갱신
+    document.getElementById('slide-ind').textContent = `${currentSlide} / ${totalSlides}`;
+    const progressPercent = ((currentSlide - 1) / (totalSlides - 1)) * 100;
+    document.getElementById('pt-progress').style.width = progressPercent + '%';
+  }
+
+  function nextSlide() {
+    if (currentSlide < totalSlides) {
+      currentSlide++;
+      updateSlide();
+    }
+  }
+
+  function prevSlide() {
+    if (currentSlide > 1) {
+      currentSlide--;
+      updateSlide();
+    }
+  }
+
+  // 키보드 방향키 연동
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+      nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+      prevSlide();
+    }
+  });
+
+  // 초기 로딩
+  updateSlide();
+</script>
+</body>
+</html>
