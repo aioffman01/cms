@@ -199,7 +199,7 @@ function renderCalendar() {
 
       itemEl.addEventListener('click', (e) => {
         e.stopPropagation();
-        openReportModal(ins.id);
+        window.location.href = `detail.html?id=${ins.id}`;
       });
 
       cell.appendChild(itemEl);
