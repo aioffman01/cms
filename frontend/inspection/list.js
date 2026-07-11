@@ -190,137 +190,19 @@ function renderTable(inspections) {
     </div>`;
 }
 
-function setupDateToggleEvents() {
-  // 계획 모달 라디오 변경 이벤트
-  const planRadios = document.querySelectorAll('input[name="plan-date-type"]');
-  const planEndWrapper = document.getElementById('plan-end-date-wrapper');
-  const planEndDateInput = document.getElementById('planned-end-date');
-
-  planRadios.forEach(r => {
-    r.addEventListener('change', (e) => {
-      if (e.target.value === 'range') {
-        planEndWrapper.style.display = 'block';
-        planEndDateInput.required = true;
-        if (!planEndDateInput.value) {
-          planEndDateInput.value = document.getElementById('planned-start-date').value;
-        }
-      } else {
-        planEndWrapper.style.display = 'none';
-        planEndDateInput.required = false;
-        planEndDateInput.value = '';
-      }
-    });
-  });
-
-  // 결과 보고서 모달 라디오 변경 이벤트
-  const actualRadios = document.querySelectorAll('input[name="actual-date-type"]');
-  const actualEndWrapper = document.getElementById('actual-end-date-wrapper');
-  const actualEndDateInput = document.getElementById('actual-end-date');
-
-  actualRadios.forEach(r => {
-    r.addEventListener('change', (e) => {
-      if (e.target.value === 'range') {
-        actualEndWrapper.style.display = 'block';
-        actualEndDateInput.required = true;
-        if (!actualEndDateInput.value) {
-          actualEndDateInput.value = document.getElementById('actual-start-date').value;
-        }
-      } else {
-        actualEndWrapper.style.display = 'none';
-        actualEndDateInput.required = false;
-        actualEndDateInput.value = '';
-      }
-    });
-  });
-}
-
 function setupEvents() {
   // 필터 바 리스너
   document.getElementById('filter-my-work').addEventListener('change', loadInspections);
   document.getElementById('filter-status').addEventListener('change', loadInspections);
 
-  // 담당자 드롭다운 변경 리스너
-  document.getElementById('member-dropdown').addEventListener('change', (e) => {
-    const val = e.target.value;
-    if (!val) return;
-    const mid = parseInt(val);
-    if (!selectedMemberIds.includes(mid)) {
-      selectedMemberIds.push(mid);
-      renderSelectedMembers();
-    }
-    e.target.value = '';
-  });
-
-  // 계획 등록 모달 열기
+  // 계획 등록 페이지 이동
   document.getElementById('btn-add-inspection').addEventListener('click', () => {
-    editingInspectionId = null;
-    document.getElementById('modal-title').textContent = '점검 계획 등록';
-    document.getElementById('modal-submit').textContent = '등록';
-    document.getElementById('inspection-form').reset();
-    document.getElementById('customer-id').disabled = false;
-    
-    // 라디오 및 종료일 필드 초기화
-    document.querySelector('input[name="plan-date-type"][value="single"]').checked = true;
-    document.getElementById('plan-end-date-wrapper').style.display = 'none';
-    document.getElementById('planned-end-date').required = false;
-
-    // 담당자 배열 리셋
-    selectedMemberIds = [];
-    renderSelectedMembers();
-
-    document.getElementById('inspection-modal').classList.add('active');
+    window.location.href = 'form.html';
   });
 
   // 모달 닫기
-  document.getElementById('modal-cancel').addEventListener('click', () => {
-    document.getElementById('inspection-modal').classList.remove('active');
-  });
   document.getElementById('report-modal-cancel').addEventListener('click', () => {
     document.getElementById('report-modal').classList.remove('active');
-  });
-
-  // 계획 폼 서브밋
-  document.getElementById('inspection-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    const customerId = document.getElementById('customer-id').value;
-    const title = document.getElementById('inspection-title').value.trim();
-    const startDate = document.getElementById('planned-start-date').value;
-    const isRange = document.querySelector('input[name="plan-date-type"]:checked').value === 'range';
-    const endDate = isRange ? document.getElementById('planned-end-date').value : startDate;
-    const planContent = document.getElementById('plan-content').value.trim();
-
-    if (!customerId) { alert('대상 고객사를 선택해주세요.'); return; }
-    if (!title) { alert('점검 제목을 입력해주세요.'); return; }
-    if (!startDate) { alert('점검 시작일을 선택해주세요.'); return; }
-    if (isRange && !endDate) { alert('점검 종료일을 선택해주세요.'); return; }
-    if (isRange && endDate < startDate) { alert('종료일은 시작일보다 빠를 수 없습니다.'); return; }
-    if (selectedMemberIds.length === 0) { alert('담당 직원을 한 명 이상 지정해야 합니다.'); return; }
-    if (!planContent) { alert('점검 계획 내용을 입력해주세요.'); return; }
-
-    const payload = {
-      customer_id: parseInt(customerId),
-      title: title,
-      planned_start_date: startDate,
-      planned_end_date: endDate,
-      plan_content: planContent,
-      member_ids: selectedMemberIds
-    };
-
-    let res;
-    if (editingInspectionId) {
-      res = await API.put('/inspection/update.php', { id: editingInspectionId, ...payload });
-    } else {
-      res = await API.post('/inspection/create.php', payload);
-    }
-
-    if (res.success) {
-      document.getElementById('inspection-modal').classList.remove('active');
-      showAlert(document.getElementById('msg-area'), res.message, 'success');
-      await loadInspections();
-    } else {
-      alert(res.message || '저장 오류');
-    }
   });
 
   // 보고서 폼 서브밋
@@ -361,41 +243,6 @@ function setupEvents() {
     }
   });
 }
-
-// 점검 계획 수정 모달 열기
-window.openEditModal = async function(id) {
-  editingInspectionId = id;
-  const res = await API.get('/inspection/get.php', { id });
-  if (!res.success) { alert(res.message); return; }
-
-  const data = res.data;
-  document.getElementById('modal-title').textContent = '점검 계획 수정';
-  document.getElementById('modal-submit').textContent = '계획 수정';
-  document.getElementById('customer-id').value = data.customer_id;
-  document.getElementById('customer-id').disabled = true; // 변경 불가
-  
-  // 시작/종료일 셋팅
-  document.getElementById('planned-start-date').value = data.planned_start_date;
-  if (data.planned_start_date !== data.planned_end_date) {
-    document.querySelector('input[name="plan-date-type"][value="range"]').checked = true;
-    document.getElementById('plan-end-date-wrapper').style.display = 'block';
-    document.getElementById('planned-end-date').value = data.planned_end_date;
-    document.getElementById('planned-end-date').required = true;
-  } else {
-    document.querySelector('input[name="plan-date-type"][value="single"]').checked = true;
-    document.getElementById('plan-end-date-wrapper').style.display = 'none';
-    document.getElementById('planned-end-date').value = '';
-    document.getElementById('planned-end-date').required = false;
-  }
-
-  document.getElementById('plan-content').value = data.plan_content;
-
-  // 담당 직원 리스트 동기화
-  selectedMemberIds = data.members.map(m => m.id);
-  renderSelectedMembers();
-
-  document.getElementById('inspection-modal').classList.add('active');
-};
 
 // 점검 결과 모달 열기 (보고 등록)
 window.openReportModal = function(id, companyName) {

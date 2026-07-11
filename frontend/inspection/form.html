@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 점검 계획 등록/수정</title>
+  <meta name="description" content="점검 계획을 등록하거나 수정합니다.">
+  <link rel="stylesheet" href="../common/style.css?v=6">
+</head>
+<body>
+
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title" id="page-title-label">점검 계획 <span>등록</span></h1>
+      <div class="flex gap-2">
+        <button class="btn btn-ghost" id="btn-cancel">취소</button>
+        <button class="btn btn-primary" id="btn-submit">저장 완료</button>
+      </div>
+    </div>
+
+    <div class="content-area" style="max-width: 700px;">
+      <div id="msg-area"></div>
+
+      <div class="card" style="padding: 28px;">
+        <form id="inspection-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="customer-id">대상 고객사 <span class="text-accent">*</span></label>
+            <select class="form-select" id="customer-id" required>
+              <option value="">-- 고객사 선택 --</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inspection-title">점검 제목 <span class="text-accent">*</span></label>
+            <input class="form-input" type="text" id="inspection-title" placeholder="예: 7월 정기 서버 점검" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">점검 기간 구분</label>
+            <div class="flex gap-4 mb-2">
+              <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
+                <input type="radio" name="plan-date-type" value="single" checked>
+                <span>하루</span>
+              </label>
+              <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
+                <input type="radio" name="plan-date-type" value="range">
+                <span>기간 선택</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group flex gap-2" id="plan-date-container">
+            <div style="flex:1;">
+              <label class="form-label" for="planned-start-date">시작일 <span class="text-accent">*</span></label>
+              <input class="form-input" type="date" id="planned-start-date" required>
+            </div>
+            <div style="flex:1; display:none;" id="plan-end-date-wrapper">
+              <label class="form-label" for="planned-end-date">종료일 <span class="text-accent">*</span></label>
+              <input class="form-input" type="date" id="planned-end-date">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="member-dropdown">점검 담당자 추가 <span class="text-accent">*</span></label>
+            <select class="form-select" id="member-dropdown">
+              <option value="">-- 담당자 선택 (관리자/작업자) --</option>
+            </select>
+            <div id="selected-members-list" class="flex flex-wrap gap-2 mt-2" style="min-height: 38px; padding: 6px 12px; border: 1px dashed var(--border); border-radius: var(--radius); background: rgba(0,0,0,0.15); align-items: center;">
+              <!-- 선택된 담당자 뱃지들이 동적으로 들어감 -->
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="plan-content">점검 계획 내용 <span class="text-accent">*</span></label>
+            <textarea class="form-input" id="plan-content" rows="6" placeholder="점검 예정 내용 및 계획을 상세히 기술하세요" required style="resize: vertical; min-height: 120px;"></textarea>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../common/api.js?v=6"></script>
+<script src="../common/layout.js?v=6"></script>
+<script src="form.js?v=6"></script>
+</body>
+</html>

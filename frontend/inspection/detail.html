@@ -55,10 +55,6 @@
         <button class="btn btn-primary" id="btn-edit-inspection" style="display:none;">점검 계획 수정</button>
         <button class="btn btn-success" id="btn-report-inspection" style="display:none;">점검 보고 작성</button>
         <button class="btn btn-danger" id="btn-delete-inspection" style="display:none;">점검 삭제</button>
-        
-        <!-- 편집 모드일 때만 노출 -->
-        <button class="btn btn-ghost" id="btn-cancel-edit" style="display:none;">취소</button>
-        <button class="btn btn-primary" id="btn-save-edit" style="display:none;">저장</button>
       </div>
     </div>
 
@@ -72,8 +68,7 @@
         <div class="detail-grid">
           <div class="detail-item full-width" style="border-color: var(--accent);">
             <div class="detail-label">점검 제목</div>
-            <div class="detail-value view-mode" id="val-title" style="font-size: 16px; font-weight: bold; color: var(--accent);"></div>
-            <input class="form-input edit-mode" type="text" id="edit-title" style="display:none; font-size: 15px; font-weight: bold; color: var(--accent); border-color: var(--accent); flex:1;">
+            <div class="detail-value" id="val-title" style="font-size: 16px; font-weight: bold; color: var(--accent);"></div>
           </div>
           
           <div class="detail-item">
@@ -88,25 +83,7 @@
           
           <div class="detail-item">
             <div class="detail-label">점검 계획 일정</div>
-            <div class="detail-value view-mode" id="val-planned-date"></div>
-            <div class="edit-mode" style="display:none; flex:1; display:flex; flex-direction:column; gap:8px;">
-              <div class="flex gap-4">
-                <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
-                  <input type="radio" name="plan-date-type" value="single" checked>
-                  <span>하루</span>
-                </label>
-                <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
-                  <input type="radio" name="plan-date-type" value="range">
-                  <span>기간 선택</span>
-                </label>
-              </div>
-              <div class="flex gap-2">
-                <input class="form-input" type="date" id="planned-start-date" style="flex:1;">
-                <div id="plan-end-date-wrapper" style="flex:1; display:none;">
-                  <input class="form-input" type="date" id="planned-end-date">
-                </div>
-              </div>
-            </div>
+            <div class="detail-value" id="val-planned-date"></div>
           </div>
           
           <div class="detail-item">
@@ -116,19 +93,12 @@
           
           <div class="detail-item full-width">
             <div class="detail-label">점검 담당자</div>
-            <div class="detail-value view-mode" id="val-assignees" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
-            <div class="edit-mode" style="display:none; flex:1; display:flex; flex-direction:column; gap:8px;">
-              <select class="form-select" id="member-dropdown" style="max-width:300px;">
-                <option value="">-- 담당자 선택 (관리자/작업자) --</option>
-              </select>
-              <div id="selected-members-list" class="flex flex-wrap gap-2" style="min-height: 38px; padding: 6px 12px; border: 1px dashed var(--border); border-radius: var(--radius); background: rgba(0,0,0,0.15); align-items: center;"></div>
-            </div>
+            <div class="detail-value" id="val-assignees" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
           </div>
           
           <div class="detail-item full-width" style="align-items: flex-start;">
             <div class="detail-label" style="margin-top: 2px;">점검 계획 내용</div>
-            <div class="detail-value view-mode" id="val-plan-content" style="white-space: pre-wrap; line-height: 1.5; flex: 1;"></div>
-            <textarea class="form-input edit-mode" id="plan-content" rows="4" placeholder="점검 예정 내용 및 계획을 상세히 기술하세요" style="display:none; resize: vertical; min-height: 80px; flex:1;"></textarea>
+            <div class="detail-value" id="val-plan-content" style="white-space: pre-wrap; line-height: 1.5; flex: 1;"></div>
           </div>
 
           <div class="detail-item full-width" style="display:none; align-items: flex-start; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.02);" id="group-report">
