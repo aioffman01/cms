@@ -429,6 +429,8 @@ input, select, textarea { font-family: var(--font); }
 .badge-user    { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
 .badge-hidden  { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 .badge-visible { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+.badge-scheduled { background: rgba(234, 179, 8, 0.15); color: #facc15; }
+.badge-completed { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
 /* ─── Alerts ─── */
 .alert {

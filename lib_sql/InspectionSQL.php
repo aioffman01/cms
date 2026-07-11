@@ -13,8 +13,8 @@ class InspectionSQL
         try {
             $stmt = $this->db->prepare(
                 'INSERT INTO `inspection`
-                 (`customer_id`, `planned_start_date`, `planned_end_date`, `plan_content`, `actual_start_date`, `actual_end_date`, `report_content`, `status`, `created_by`)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                 (`customer_id`, `planned_start_date`, `planned_end_date`, `plan_content`, `actual_start_date`, `actual_end_date`, `report_content`, `issues`, `status`, `created_by`)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
             $stmt->execute([
                 (int) $data['customer_id'],
@@ -24,6 +24,7 @@ class InspectionSQL
                 !empty($data['actual_start_date']) ? $data['actual_start_date'] : null,
                 !empty($data['actual_end_date']) ? $data['actual_end_date'] : null,
                 !empty($data['report_content']) ? $data['report_content'] : null,
+                !empty($data['issues']) ? $data['issues'] : null,
                 $data['status'] ?? 'scheduled',
                 (int) $data['created_by'],
             ]);
@@ -52,7 +53,7 @@ class InspectionSQL
         try {
             $stmt = $this->db->prepare(
                 'UPDATE `inspection`
-                 SET `planned_start_date`=?, `planned_end_date`=?, `plan_content`=?, `actual_start_date`=?, `actual_end_date`=?, `report_content`=?, `status`=?
+                 SET `planned_start_date`=?, `planned_end_date`=?, `plan_content`=?, `actual_start_date`=?, `actual_end_date`=?, `report_content`=?, `issues`=?, `status`=?
                  WHERE `id`=?'
             );
             $stmt->execute([
@@ -62,6 +63,7 @@ class InspectionSQL
                 !empty($data['actual_start_date']) ? $data['actual_start_date'] : null,
                 !empty($data['actual_end_date']) ? $data['actual_end_date'] : null,
                 !empty($data['report_content']) ? $data['report_content'] : null,
+                !empty($data['issues']) ? $data['issues'] : null,
                 $data['status'] ?? 'scheduled',
                 $id,
             ]);

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CMS — 점검 목록</title>
   <meta name="description" content="고객사 점검 계획 및 결과 보고서 목록입니다.">
-  <link rel="stylesheet" href="../common/style.css">
+  <link rel="stylesheet" href="../common/style.css?v=5">
   <style>
     .member-checkbox-list {
       max-height: 120px;
@@ -150,31 +150,12 @@
           <input class="form-input" type="text" id="report-customer" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
         </div>
         <div class="form-group">
-          <label class="form-label">실제 점검기간 구분</label>
-          <div class="flex gap-4 mb-2">
-            <label class="member-checkbox-item" style="margin-bottom:0;">
-              <input type="radio" name="actual-date-type" value="single" checked>
-              <span>하루</span>
-            </label>
-            <label class="member-checkbox-item" style="margin-bottom:0;">
-              <input type="radio" name="actual-date-type" value="range">
-              <span>기간 선택</span>
-            </label>
-          </div>
-        </div>
-        <div class="form-group flex gap-2" id="actual-date-container">
-          <div style="flex:1;">
-            <label class="form-label" for="actual-start-date">시작일 <span class="text-accent">*</span></label>
-            <input class="form-input" type="date" id="actual-start-date" required>
-          </div>
-          <div style="flex:1; display:none;" id="actual-end-date-wrapper">
-            <label class="form-label" for="actual-end-date">종료일 <span class="text-accent">*</span></label>
-            <input class="form-input" type="date" id="actual-end-date">
-          </div>
+          <label class="form-label" for="report-content">점검결과 <span class="text-accent">*</span></label>
+          <textarea class="form-input" id="report-content" rows="4" placeholder="점검 조치 사항 및 결과를 입력하세요" required style="resize: vertical; min-height: 80px;"></textarea>
         </div>
         <div class="form-group">
-          <label class="form-label" for="report-content">점검 결과 내용 <span class="text-accent">*</span></label>
-          <textarea class="form-input" id="report-content" rows="6" placeholder="점검 조치 사항 및 점검 결과를 입력하세요" required style="resize: vertical; min-height: 120px;"></textarea>
+          <label class="form-label" for="report-issues">이슈사항</label>
+          <textarea class="form-input" id="report-issues" rows="3" placeholder="점검 중 발생한 이슈나 특이사항이 있다면 입력하세요" style="resize: vertical; min-height: 60px;"></textarea>
         </div>
       </form>
     </div>
@@ -185,8 +166,8 @@
   </div>
 </div>
 
-<script src="../common/api.js?v=4"></script>
-<script src="../common/layout.js"></script>
-<script src="list.js"></script>
+<script src="../common/api.js?v=5"></script>
+<script src="../common/layout.js?v=5"></script>
+<script src="list.js?v=5"></script>
 </body>
 </html>

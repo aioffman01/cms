@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `inspection` (
     `actual_start_date`  DATE NULL         DEFAULT NULL            COMMENT '실제 점검 시작일 (완료 시)',
     `actual_end_date`    DATE NULL         DEFAULT NULL            COMMENT '실제 점검 종료일 (완료 시)',
     `report_content`     TEXT NULL         DEFAULT NULL            COMMENT '점검 결과 보고서',
+    `issues`             TEXT NULL         DEFAULT NULL            COMMENT '이슈사항',
     `status`         ENUM('scheduled', 'completed') NOT NULL DEFAULT 'scheduled' COMMENT '점검 상태 (예정/완료)',
     `created_by`     INT UNSIGNED NOT NULL                         COMMENT '등록자 회원 ID (FK)',
     `created_at`     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

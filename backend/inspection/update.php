@@ -23,6 +23,7 @@ $planContent      = trim($input['plan_content'] ?? '');
 $actualStartDate  = trim($input['actual_start_date'] ?? '');
 $actualEndDate    = trim($input['actual_end_date'] ?? '');
 $reportContent    = trim($input['report_content'] ?? '');
+$issues           = trim($input['issues'] ?? '');
 $status           = trim($input['status'] ?? 'scheduled');
 $memberIds        = $input['member_ids'] ?? [];
 
@@ -57,6 +58,7 @@ try {
         'actual_start_date'  => !empty($actualStartDate) ? $actualStartDate : null,
         'actual_end_date'    => !empty($actualEndDate) ? $actualEndDate : null,
         'report_content'     => $reportContent,
+        'issues'             => $issues,
         'status'             => $status,
     ], $memberIds);
 

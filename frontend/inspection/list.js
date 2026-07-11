@@ -139,13 +139,13 @@ function renderTable(inspections) {
       <span class="member-badge">${escHtml(m.name)}</span>
     `).join('');
 
-    const statusBadge = `<span class="badge badge-${i.status}">${i.status === 'completed' ? '완료' : '예정'}</span>`;
+    const statusBadge = `<span class="badge badge-${i.status}">${i.status === 'completed' ? '점검완료' : '점검예정'}</span>`;
 
     // 액션 버튼 구성
     let actionBtn = '';
     if (i.status === 'scheduled') {
       actionBtn = `
-        <button class="btn btn-sm btn-success" onclick="openReportModal(${i.id}, '${escHtml(i.customer_company)}')">결과작성</button>
+        <button class="btn btn-sm btn-success" onclick="openReportModal(${i.id}, '${escHtml(i.customer_company)}')">점검 보고</button>
         <button class="btn btn-sm btn-secondary" onclick="openEditModal(${i.id})">수정</button>
       `;
     } else {
@@ -328,15 +328,11 @@ function setupEvents() {
   document.getElementById('report-form').addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const actualStart = document.getElementById('actual-start-date').value;
-    const isRange = document.querySelector('input[name="actual-date-type"]:checked').value === 'range';
-    const actualEnd = isRange ? document.getElementById('actual-end-date').value : actualStart;
     const reportContent = document.getElementById('report-content').value.trim();
+    const issues = document.getElementById('report-issues').value.trim();
+    const todayStr = new Date().toISOString().substring(0, 10);
 
-    if (!actualStart) { alert('실제 점검 시작일을 선택해주세요.'); return; }
-    if (isRange && !actualEnd) { alert('실제 점검 종료일을 선택해주세요.'); return; }
-    if (isRange && actualEnd < actualStart) { alert('종료일은 시작일보다 빠를 수 없습니다.'); return; }
-    if (!reportContent) { alert('점검 결과 내용을 입력해주세요.'); return; }
+    if (!reportContent) { alert('점검결과 내용을 입력해주세요.'); return; }
 
     // 기존 데이터 읽어와서 합친 후 PUT 전송
     const getRes = await API.get('/inspection/get.php', { id: reportingInspectionId });
@@ -348,9 +344,10 @@ function setupEvents() {
       planned_start_date: current.planned_start_date,
       planned_end_date: current.planned_end_date,
       plan_content: current.plan_content,
-      actual_start_date: actualStart,
-      actual_end_date: actualEnd,
+      actual_start_date: todayStr,
+      actual_end_date: todayStr,
       report_content: reportContent,
+      issues: issues,
       status: 'completed',
       member_ids: current.members.map(m => m.id)
     };
@@ -358,7 +355,7 @@ function setupEvents() {
     const res = await API.put('/inspection/update.php', payload);
     if (res.success) {
       document.getElementById('report-modal').classList.remove('active');
-      showAlert(document.getElementById('msg-area'), '결과 보고서가 등록되어 점검이 완료되었습니다.', 'success');
+      showAlert(document.getElementById('msg-area'), '보고서가 완료되었으며 점검완료 상태로 변경되었습니다.', 'success');
       await loadInspections();
     } else {
       alert(res.message || '오류 발생');
@@ -401,26 +398,17 @@ window.openEditModal = async function(id) {
   document.getElementById('inspection-modal').classList.add('active');
 };
 
-// 점검 결과 모달 열기
+// 점검 결과 모달 열기 (보고 등록)
 window.openReportModal = function(id, companyName) {
   reportingInspectionId = id;
   document.getElementById('report-customer').value = companyName;
-  
-  // 실제 점검일 필드 초기화 (오늘 기준 하루 점검으로 기본 셋팅)
-  document.querySelector('input[name="actual-date-type"][value="single"]').checked = true;
-  document.getElementById('actual-end-date-wrapper').style.display = 'none';
-  document.getElementById('actual-end-date').required = false;
-  document.getElementById('actual-end-date').value = '';
-  document.getElementById('actual-start-date').value = new Date().toISOString().substring(0, 10);
-  
   document.getElementById('report-content').value = '';
+  document.getElementById('report-issues').value = '';
   
   // 모달을 입력 가능하게 활성화
   document.getElementById('report-modal-submit').style.display = 'inline-block';
-  document.querySelectorAll('input[name="actual-date-type"]').forEach(r => r.disabled = false);
-  document.getElementById('actual-start-date').disabled = false;
-  document.getElementById('actual-end-date').disabled = false;
   document.getElementById('report-content').disabled = false;
+  document.getElementById('report-issues').disabled = false;
   
   document.getElementById('report-modal-title').textContent = '점검 결과 보고서 작성';
   document.getElementById('report-modal').classList.add('active');
@@ -433,26 +421,12 @@ window.openViewReportModal = async function(id) {
 
   const data = res.data;
   document.getElementById('report-customer').value = data.customer_company;
-  
-  // 기간 렌더링 동기화
-  document.getElementById('actual-start-date').value = data.actual_start_date;
-  if (data.actual_start_date !== data.actual_end_date) {
-    document.querySelector('input[name="actual-date-type"][value="range"]').checked = true;
-    document.getElementById('actual-end-date-wrapper').style.display = 'block';
-    document.getElementById('actual-end-date').value = data.actual_end_date;
-  } else {
-    document.querySelector('input[name="actual-date-type"][value="single"]').checked = true;
-    document.getElementById('actual-end-date-wrapper').style.display = 'none';
-    document.getElementById('actual-end-date').value = '';
-  }
-
-  document.getElementById('report-content').value = data.report_content;
+  document.getElementById('report-content').value = data.report_content || '';
+  document.getElementById('report-issues').value = data.issues || '';
   
   // 편집 불가능하게 막기
-  document.querySelectorAll('input[name="actual-date-type"]').forEach(r => r.disabled = true);
-  document.getElementById('actual-start-date').disabled = true;
-  document.getElementById('actual-end-date').disabled = true;
   document.getElementById('report-content').disabled = true;
+  document.getElementById('report-issues').disabled = true;
   document.getElementById('report-modal-submit').style.display = 'none';
 
   document.getElementById('report-modal-title').textContent = '점검 결과 보고서 조회';
