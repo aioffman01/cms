@@ -5,41 +5,47 @@ let members = [];
 let selectedMemberIds = [];
 
 (async () => {
-  currentUser = await initLayout('inspection-list');
-  if (!currentUser) return;
+  try {
+    currentUser = await initLayout('inspection-list');
+    if (!currentUser) return;
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const idParam = urlParams.get('id');
-  if (idParam) {
-    inspectionId = parseInt(idParam);
+    const urlParams = new URLSearchParams(window.location.search);
+    const idParam = urlParams.get('id');
+    if (idParam) {
+      inspectionId = parseInt(idParam);
+    }
+
+    await Promise.all([
+      loadCustomers(),
+      loadMembers()
+    ]);
+
+    if (inspectionId) {
+      // 수정 모드
+      document.getElementById('page-title-label').innerHTML = '점검 계획 <span>수정</span>';
+      await loadInspectionData();
+    } else {
+      // 등록 모드
+      document.getElementById('page-title-label').innerHTML = '점검 계획 <span>등록</span>';
+      // 신규 등록 시에는 기본값으로 오늘 지정
+      document.getElementById('planned-start-date').value = new Date().toISOString().substring(0, 10);
+      renderSelectedMembers();
+    }
+
+    setupEvents();
+    setupDateToggleEvents();
+  } catch (err) {
+    console.error('form.js 실행 오류:', err);
+    showDebugError(err);
   }
-
-  await Promise.all([
-    loadCustomers(),
-    loadMembers()
-  ]);
-
-  if (inspectionId) {
-    // 수정 모드
-    document.getElementById('page-title-label').innerHTML = '점검 계획 <span>수정</span>';
-    await loadInspectionData();
-  } else {
-    // 등록 모드
-    document.getElementById('page-title-label').innerHTML = '점검 계획 <span>등록</span>';
-    // 신규 등록 시에는 기본값으로 오늘 지정
-    document.getElementById('planned-start-date').value = new Date().toISOString().substring(0, 10);
-    renderSelectedMembers();
-  }
-
-  setupEvents();
-  setupDateToggleEvents();
 })();
 
 async function loadCustomers() {
   const res = await API.get('/customer/list.php');
-  if (res.success) {
+  if (res.success && res.data) {
     const sel = document.getElementById('customer-id');
-    (res.data || []).forEach(c => {
+    const customers = res.data.customers || [];
+    customers.forEach(c => {
       const opt = document.createElement('option');
       opt.value = c.id;
       opt.textContent = c.company_name;
@@ -249,4 +255,77 @@ function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+function showDebugError(err) {
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '100vw';
+  container.style.height = '100vh';
+  container.style.background = 'rgba(0,0,0,0.85)';
+  container.style.zIndex = '99999';
+  container.style.display = 'flex';
+  container.style.alignItems = 'center';
+  container.style.justifyContent = 'center';
+  container.style.padding = '20px';
+
+  const box = document.createElement('div');
+  box.style.background = '#222';
+  box.style.border = '1px solid #ff4444';
+  box.style.borderRadius = '8px';
+  box.style.padding = '24px';
+  box.style.maxWidth = '600px';
+  box.style.width = '100%';
+  box.style.color = '#fff';
+
+  const title = document.createElement('h3');
+  title.textContent = '🚨 JS Runtime Error Detected';
+  title.style.color = '#ff4444';
+  title.style.marginBottom = '12px';
+  box.appendChild(title);
+
+  const desc = document.createElement('p');
+  desc.textContent = err.message || err;
+  desc.style.marginBottom = '12px';
+  box.appendChild(desc);
+
+  const textarea = document.createElement('textarea');
+  textarea.value = err.stack || '';
+  textarea.style.width = '100%';
+  textarea.style.height = '200px';
+  textarea.style.background = '#111';
+  textarea.style.color = '#00ff00';
+  textarea.style.border = '1px solid #444';
+  textarea.style.padding = '10px';
+  textarea.style.fontFamily = 'monospace';
+  textarea.style.fontSize = '12px';
+  textarea.style.marginBottom = '16px';
+  textarea.readOnly = true;
+  box.appendChild(textarea);
+
+  const btnFlex = document.createElement('div');
+  btnFlex.style.display = 'flex';
+  btnFlex.style.gap = '12px';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = '📋 Copy Error Stack';
+  copyBtn.className = 'btn btn-primary';
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(textarea.value);
+    copyBtn.textContent = '✅ Copied!';
+    setTimeout(() => { copyBtn.textContent = '📋 Copy Error Stack'; }, 2000);
+  };
+  btnFlex.appendChild(copyBtn);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.className = 'btn btn-ghost';
+  closeBtn.onclick = () => { container.remove(); };
+  btnFlex.appendChild(closeBtn);
+
+  box.appendChild(btnFlex);
+  container.appendChild(box);
+  document.body.appendChild(container);
 }

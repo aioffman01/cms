@@ -5,88 +5,28 @@ let members = [];
 let selectedMemberIds = [];
 
 (async () => {
-  currentUser = await initLayout('inspection-list'); // Keep side menu highlight active
-  if (!currentUser) return;
+  try {
+    currentUser = await initLayout('inspection-list'); // Keep side menu highlight active
+    if (!currentUser) return;
 
-  const urlParams = new URLSearchParams(window.location.search);
-  inspectionId = parseInt(urlParams.get('id'));
+    const urlParams = new URLSearchParams(window.location.search);
+    inspectionId = parseInt(urlParams.get('id'));
 
-  if (!inspectionId) {
-    showAlert(document.getElementById('msg-area'), '잘못된 접근입니다. 점검 ID가 누락되었습니다.', 'error');
-    document.getElementById('detail-loading').style.display = 'none';
-    return;
+    if (!inspectionId) {
+      showAlert(document.getElementById('msg-area'), '잘못된 접근입니다. 점검 ID가 누락되었습니다.', 'error');
+      document.getElementById('detail-loading').style.display = 'none';
+      return;
+    }
+
+    await loadInspectionDetail();
+    setupEvents();
+  } catch (err) {
+    console.error('detail.js 실행 오류:', err);
+    showDebugError(err);
   }
-
-  await Promise.all([
-    loadCustomers(),
-    loadMembers(),
-    loadInspectionDetail()
-  ]);
-
-  setupEvents();
 })();
 
-async function loadCustomers() {
-  const res = await API.get('/customer/list.php');
-  if (res.success) {
-    const sel = document.getElementById('customer-id');
-    (res.data || []).forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.company_name;
-      sel.appendChild(opt);
-    });
-  }
-}
 
-async function loadMembers() {
-  const res = await API.get('/member/list.php');
-  if (res.success) {
-    members = res.data || [];
-    const staffMembers = members.filter(m => m.role === 'admin' || m.role === 'worker');
-    
-    const sel = document.getElementById('member-dropdown');
-    sel.innerHTML = '<option value="">-- 담당자 선택 (관리자/작업자) --</option>';
-    staffMembers.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m.id;
-      opt.textContent = `${m.name} (${m.role === 'admin' ? '관리자' : '작업자'} - ${m.login_id})`;
-      sel.appendChild(opt);
-    });
-  }
-}
-
-function renderSelectedMembers() {
-  const container = document.getElementById('selected-members-list');
-  container.innerHTML = '';
-  
-  if (selectedMemberIds.length === 0) {
-    container.innerHTML = '<span class="text-muted text-xs">선택된 담당자가 없습니다.</span>';
-    return;
-  }
-  
-  selectedMemberIds.forEach(id => {
-    const m = members.find(item => item.id === id);
-    if (!m) return;
-    
-    const badge = document.createElement('span');
-    badge.className = 'member-badge flex items-center gap-1';
-    badge.style.padding = '4px 8px';
-    badge.style.fontSize = '12px';
-    badge.style.display = 'inline-flex';
-    badge.style.alignItems = 'center';
-    badge.innerHTML = `
-      <span>${escHtml(m.name)} (${m.role === 'admin' ? '관리자' : '작업자'})</span>
-      <span style="cursor:pointer; font-weight:bold; margin-left:6px; color:#f87171;" onclick="removeSelectedMember(${m.id})">×</span>
-    `;
-    container.appendChild(badge);
-  });
-}
-
-window.removeSelectedMember = function(id) {
-  selectedMemberIds = selectedMemberIds.filter(mid => mid !== id);
-  renderSelectedMembers();
-};
 
 async function loadInspectionDetail() {
   const res = await API.get('/inspection/get.php', { id: inspectionId });
@@ -247,4 +187,77 @@ function escHtml(str) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+function showDebugError(err) {
+  const container = document.createElement('div');
+  container.style.position = 'fixed';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '100vw';
+  container.style.height = '100vh';
+  container.style.background = 'rgba(0,0,0,0.85)';
+  container.style.zIndex = '99999';
+  container.style.display = 'flex';
+  container.style.alignItems = 'center';
+  container.style.justifyContent = 'center';
+  container.style.padding = '20px';
+
+  const box = document.createElement('div');
+  box.style.background = '#222';
+  box.style.border = '1px solid #ff4444';
+  box.style.borderRadius = '8px';
+  box.style.padding = '24px';
+  box.style.maxWidth = '600px';
+  box.style.width = '100%';
+  box.style.color = '#fff';
+
+  const title = document.createElement('h3');
+  title.textContent = '🚨 JS Runtime Error Detected';
+  title.style.color = '#ff4444';
+  title.style.marginBottom = '12px';
+  box.appendChild(title);
+
+  const desc = document.createElement('p');
+  desc.textContent = err.message || err;
+  desc.style.marginBottom = '12px';
+  box.appendChild(desc);
+
+  const textarea = document.createElement('textarea');
+  textarea.value = err.stack || '';
+  textarea.style.width = '100%';
+  textarea.style.height = '200px';
+  textarea.style.background = '#111';
+  textarea.style.color = '#00ff00';
+  textarea.style.border = '1px solid #444';
+  textarea.style.padding = '10px';
+  textarea.style.fontFamily = 'monospace';
+  textarea.style.fontSize = '12px';
+  textarea.style.marginBottom = '16px';
+  textarea.readOnly = true;
+  box.appendChild(textarea);
+
+  const btnFlex = document.createElement('div');
+  btnFlex.style.display = 'flex';
+  btnFlex.style.gap = '12px';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.textContent = '📋 Copy Error Stack';
+  copyBtn.className = 'btn btn-primary';
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(textarea.value);
+    copyBtn.textContent = '✅ Copied!';
+    setTimeout(() => { copyBtn.textContent = '📋 Copy Error Stack'; }, 2000);
+  };
+  btnFlex.appendChild(copyBtn);
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Close';
+  closeBtn.className = 'btn btn-ghost';
+  closeBtn.onclick = () => { container.remove(); };
+  btnFlex.appendChild(closeBtn);
+
+  box.appendChild(btnFlex);
+  container.appendChild(box);
+  document.body.appendChild(container);
 }
