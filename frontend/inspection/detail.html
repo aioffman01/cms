@@ -66,49 +66,49 @@
       <!-- 상세 카드 -->
       <div class="card" id="detail-card" style="display:none; padding: 24px; margin-bottom: 24px;">
         <div class="detail-grid">
-          <div class="form-group" style="grid-column: span 2;">
-            <div class="info-label">점검 제목</div>
-            <div class="info-value" id="val-title" style="font-size: 18px; font-weight: bold; border-color: var(--accent);"></div>
+          <div class="detail-item full-width" style="border-color: var(--accent);">
+            <div class="detail-label">점검 제목</div>
+            <div class="detail-value" id="val-title" style="font-size: 16px; font-weight: bold; color: var(--accent);"></div>
           </div>
           
-          <div class="form-group">
-            <div class="info-label">대상 고객사</div>
-            <div class="info-value" id="val-customer"></div>
+          <div class="detail-item">
+            <div class="detail-label">대상 고객사</div>
+            <div class="detail-value" id="val-customer"></div>
           </div>
           
-          <div class="form-group">
-            <div class="info-label">진행 상태</div>
-            <div id="val-status"></div>
+          <div class="detail-item">
+            <div class="detail-label">진행 상태</div>
+            <div class="detail-value" id="val-status"></div>
           </div>
           
-          <div class="form-group">
-            <div class="info-label">점검 계획 일정</div>
-            <div class="info-value" id="val-planned-date"></div>
+          <div class="detail-item">
+            <div class="detail-label">점검 계획 일정</div>
+            <div class="detail-value" id="val-planned-date"></div>
           </div>
           
-          <div class="form-group">
-            <div class="info-label">실제 점검 완료일</div>
-            <div class="info-value" id="val-actual-date"></div>
+          <div class="detail-item">
+            <div class="detail-label">실제 점검 완료일</div>
+            <div class="detail-value" id="val-actual-date"></div>
           </div>
           
-          <div class="form-group" style="grid-column: span 2;">
-            <div class="info-label">점검 담당자</div>
-            <div class="info-value" id="val-assignees" style="flex-wrap: wrap; gap: 6px;"></div>
+          <div class="detail-item full-width">
+            <div class="detail-label">점검 담당자</div>
+            <div class="detail-value" id="val-assignees" style="display: flex; flex-wrap: wrap; gap: 6px;"></div>
           </div>
           
-          <div class="form-group" style="grid-column: span 2;">
-            <div class="info-label">점검 계획 내용</div>
-            <div class="info-value textarea" id="val-plan-content"></div>
+          <div class="detail-item full-width" style="align-items: flex-start;">
+            <div class="detail-label" style="margin-top: 2px;">점검 계획 내용</div>
+            <div class="detail-value" id="val-plan-content" style="white-space: pre-wrap; line-height: 1.5; flex: 1;"></div>
           </div>
 
-          <div class="form-group" style="grid-column: span 2; display:none;" id="group-report">
-            <div class="info-label">점검결과</div>
-            <div class="info-value textarea" id="val-report-content" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.02);"></div>
+          <div class="detail-item full-width" style="display:none; align-items: flex-start; border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.02);" id="group-report">
+            <div class="detail-label" style="color: #34d399; margin-top: 2px;">점검결과</div>
+            <div class="detail-value" id="val-report-content" style="white-space: pre-wrap; line-height: 1.5; flex: 1; color: #34d399;"></div>
           </div>
 
-          <div class="form-group" style="grid-column: span 2; display:none;" id="group-issues">
-            <div class="info-label">이슈사항</div>
-            <div class="info-value textarea" id="val-issues" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.02);"></div>
+          <div class="detail-item full-width" style="display:none; align-items: flex-start; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.02);" id="group-issues">
+            <div class="detail-label" style="color: #f87171; margin-top: 2px;">이슈사항</div>
+            <div class="detail-value" id="val-issues" style="white-space: pre-wrap; line-height: 1.5; flex: 1; color: #f87171;"></div>
           </div>
         </div>
       </div>
