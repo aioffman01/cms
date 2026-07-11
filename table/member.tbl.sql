@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `member` (
     `login_id`   VARCHAR(50)  NOT NULL                       COMMENT '로그인 아이디',
     `password`   VARCHAR(255) NOT NULL                       COMMENT '비밀번호 (bcrypt)',
     `name`       VARCHAR(100) NOT NULL                       COMMENT '이름',
-    `role`       ENUM('admin','user') NOT NULL DEFAULT 'user' COMMENT '역할 (admin=관리자, user=일반사용자)',
+    `role`       ENUM('admin','worker','user') NOT NULL DEFAULT 'user' COMMENT '역할 (admin=관리자, worker=작업자, user=일반사용자)',
     `created_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일',
     `updated_at` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일',
     PRIMARY KEY (`id`),

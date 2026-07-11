@@ -19,7 +19,7 @@ $input    = json_decode(file_get_contents('php://input'), true) ?? [];
 $memberId = (int) ($input['member_id'] ?? 0);
 $role     = $input['role'] ?? '';
 
-if ($memberId <= 0 || !in_array($role, ['admin', 'user'], true)) {
+if ($memberId <= 0 || !in_array($role, ['admin', 'worker', 'user'], true)) {
     Response::error('유효하지 않은 요청입니다.');
 }
 

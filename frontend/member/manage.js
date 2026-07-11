@@ -63,7 +63,7 @@ function renderTable(members) {
         <td class="text-muted text-sm">${m.id}</td>
         <td>${escHtml(m.login_id)}</td>
         <td>${escHtml(m.name)} ${isSelf ? '<span class="text-accent text-xs">(나)</span>' : ''}</td>
-        <td><span class="badge badge-${m.role}">${m.role === 'admin' ? '관리자' : '일반사용자'}</span></td>
+        <td><span class="badge badge-${m.role}">${m.role === 'admin' ? '관리자' : (m.role === 'worker' ? '작업자' : '일반사용자')}</span></td>
         <td class="text-muted text-sm">${fmtDate(m.created_at)}</td>
         <td>${roleBtn}</td>
       </tr>`;

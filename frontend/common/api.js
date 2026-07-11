@@ -56,3 +56,16 @@ const API = {
   put(path, data)            { return this.request('PUT',    path, data); },
   delete(path, data = null)  { return this.request('DELETE', path, data); },
 };
+
+// 모든 날짜 입력 칸 클릭 시 브라우저 내장 달력 선택 드롭다운 즉시 표시
+document.addEventListener('click', (e) => {
+  if (e.target && e.target.tagName === 'INPUT' && e.target.type === 'date') {
+    if (typeof e.target.showPicker === 'function') {
+      try {
+        e.target.showPicker();
+      } catch (err) {
+        console.error('DatePicker showPicker error:', err);
+      }
+    }
+  }
+});

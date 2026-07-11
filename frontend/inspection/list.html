@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 점검 목록</title>
+  <meta name="description" content="고객사 점검 계획 및 결과 보고서 목록입니다.">
+  <link rel="stylesheet" href="../common/style.css">
+  <style>
+    .member-checkbox-list {
+      max-height: 120px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .member-checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+    .member-checkbox-item input {
+      cursor: pointer;
+    }
+    .member-badge {
+      display: inline-block;
+      background: rgba(20, 184, 166, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(20, 184, 166, 0.3);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">점검 <span>목록</span></h1>
+      <button class="btn btn-primary" id="btn-add-inspection">+ 점검 계획 등록</button>
+    </div>
+
+    <div class="content-area">
+      <div id="msg-area"></div>
+
+      <!-- 필터 바 -->
+      <div class="card mb-4">
+        <div class="card-body flex justify-between items-center flex-wrap gap-4" style="padding: 16px 20px;">
+          <div class="flex items-center gap-4">
+            <label class="member-checkbox-item" style="margin-bottom:0;">
+              <input type="checkbox" id="filter-my-work">
+              <span>내 점검만 보기</span>
+            </label>
+            <div class="flex items-center gap-2">
+              <span class="text-sm text-muted">상태:</span>
+              <select class="form-select" id="filter-status" style="padding: 6px 12px; font-size: 13px;">
+                <option value="">전체</option>
+                <option value="scheduled">예정</option>
+                <option value="completed">완료</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 테이블 카드 -->
+      <div class="card">
+        <div id="table-area">
+          <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 점검 계획 등록/수정 모달 -->
+<div class="modal-overlay" id="inspection-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="max-width: 550px;">
+    <div class="modal-title" id="modal-title">점검 계획 등록</div>
+    <div class="modal-body">
+      <form id="inspection-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="customer-id">대상 고객사 <span class="text-accent">*</span></label>
+          <select class="form-select" id="customer-id" required>
+            <option value="">-- 고객사 선택 --</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">점검 기간 구분</label>
+          <div class="flex gap-4 mb-2">
+            <label class="member-checkbox-item" style="margin-bottom:0;">
+              <input type="radio" name="plan-date-type" value="single" checked>
+              <span>하루</span>
+            </label>
+            <label class="member-checkbox-item" style="margin-bottom:0;">
+              <input type="radio" name="plan-date-type" value="range">
+              <span>기간 선택</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group flex gap-2" id="plan-date-container">
+          <div style="flex:1;">
+            <label class="form-label" for="planned-start-date">시작일 <span class="text-accent">*</span></label>
+            <input class="form-input" type="date" id="planned-start-date" required>
+          </div>
+          <div style="flex:1; display:none;" id="plan-end-date-wrapper">
+            <label class="form-label" for="planned-end-date">종료일 <span class="text-accent">*</span></label>
+            <input class="form-input" type="date" id="planned-end-date">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="member-dropdown">점검 담당자 추가 <span class="text-accent">*</span></label>
+          <select class="form-select" id="member-dropdown">
+            <option value="">-- 담당자 선택 (관리자/작업자) --</option>
+          </select>
+          <div id="selected-members-list" class="flex flex-wrap gap-2 mt-2" style="min-height: 38px; padding: 6px 12px; border: 1px dashed var(--border); border-radius: var(--radius); background: rgba(0,0,0,0.15); align-items: center;">
+            <!-- 선택된 담당자 뱃지들이 동적으로 들어감 -->
+          </div>
+          <div class="form-hint">드롭다운 메뉴에서 담당자를 클릭하여 추가하세요. 클릭된 담당자는 아래에 뱃지로 나타납니다.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="plan-content">점검 계획 내용 <span class="text-accent">*</span></label>
+          <textarea class="form-input" id="plan-content" rows="4" placeholder="점검 예정 내용 및 계획을 상세히 기술하세요" required style="resize: vertical; min-height: 80px;"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modal-cancel">취소</button>
+      <button class="btn btn-primary" id="modal-submit" form="inspection-form">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- 점검 결과 보고서 작성 모달 -->
+<div class="modal-overlay" id="report-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title" style="max-width: 550px;">
+    <div class="modal-title" id="report-modal-title">점검 결과 보고서 작성</div>
+    <div class="modal-body">
+      <form id="report-form" novalidate>
+        <div class="form-group">
+          <label class="form-label">고객사</label>
+          <input class="form-input" type="text" id="report-customer" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+        </div>
+        <div class="form-group">
+          <label class="form-label">실제 점검기간 구분</label>
+          <div class="flex gap-4 mb-2">
+            <label class="member-checkbox-item" style="margin-bottom:0;">
+              <input type="radio" name="actual-date-type" value="single" checked>
+              <span>하루</span>
+            </label>
+            <label class="member-checkbox-item" style="margin-bottom:0;">
+              <input type="radio" name="actual-date-type" value="range">
+              <span>기간 선택</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group flex gap-2" id="actual-date-container">
+          <div style="flex:1;">
+            <label class="form-label" for="actual-start-date">시작일 <span class="text-accent">*</span></label>
+            <input class="form-input" type="date" id="actual-start-date" required>
+          </div>
+          <div style="flex:1; display:none;" id="actual-end-date-wrapper">
+            <label class="form-label" for="actual-end-date">종료일 <span class="text-accent">*</span></label>
+            <input class="form-input" type="date" id="actual-end-date">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="report-content">점검 결과 내용 <span class="text-accent">*</span></label>
+          <textarea class="form-input" id="report-content" rows="6" placeholder="점검 조치 사항 및 점검 결과를 입력하세요" required style="resize: vertical; min-height: 120px;"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="report-modal-cancel">취소</button>
+      <button class="btn btn-primary" id="report-modal-submit" form="report-form">보고서 완료</button>
+    </div>
+  </div>
+</div>
+
+<script src="../common/api.js?v=4"></script>
+<script src="../common/layout.js"></script>
+<script src="list.js"></script>
+</body>
+</html>

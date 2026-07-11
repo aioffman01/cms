@@ -425,6 +425,7 @@ input, select, textarea { font-family: var(--font); }
   letter-spacing: 0.5px;
 }
 .badge-admin   { background: rgba(20, 184, 166, 0.15); color: var(--accent); }
+.badge-worker  { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
 .badge-user    { background: rgba(255, 255, 255, 0.06); color: var(--text-muted); }
 .badge-hidden  { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 .badge-visible { background: rgba(16, 185, 129, 0.15); color: #34d399; }

@@ -33,6 +33,14 @@ function renderSidebar(user, activePage) {
       <a href="../customer/list.html"><span class="nav-icon">▤</span><span>고객 목록</span></a>
     </li>
 
+    <li class="nav-section-label">점검 관리</li>
+    <li class="nav-item ${activePage === 'inspection-list' ? 'active' : ''}">
+      <a href="../inspection/list.html"><span class="nav-icon">▤</span><span>점검 목록</span></a>
+    </li>
+    <li class="nav-item ${activePage === 'inspection-calendar' ? 'active' : ''}">
+      <a href="../inspection/calendar.html"><span class="nav-icon">📅</span><span>점검 캘린더</span></a>
+    </li>
+
     <li class="nav-section-label">내 계정</li>
     <li class="nav-item ${activePage === 'profile' ? 'active' : ''}">
       <a href="../member/profile.html"><span class="nav-icon">◎</span><span>내 정보 수정</span></a>
