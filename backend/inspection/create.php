@@ -17,6 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $input        = json_decode(file_get_contents('php://input'), true) ?? [];
 $customerId   = (int)($input['customer_id'] ?? 0);
+$title        = trim($input['title'] ?? '');
 $plannedStartDate = trim($input['planned_start_date'] ?? '');
 $plannedEndDate   = trim($input['planned_end_date'] ?? '');
 $planContent      = trim($input['plan_content'] ?? '');
@@ -24,6 +25,7 @@ $memberIds        = $input['member_ids'] ?? []; // 담당자 배열
 $user             = Auth::getUser();
 
 if ($customerId <= 0) Response::error('고객사가 지정되지 않았습니다.');
+if (empty($title)) Response::error('점검 제목을 입력해주세요.');
 if (empty($plannedStartDate)) Response::error('점검 시작 예정일을 입력해주세요.');
 if (empty($planContent)) Response::error('점검 계획 내용을 입력해주세요.');
 if (!is_array($memberIds)) Response::error('담당자 형식이 올바르지 않습니다.');
@@ -35,6 +37,7 @@ if (empty($plannedEndDate)) {
 try {
     $id = (new InspectionSQL(DB::getInstance()))->create([
         'customer_id'        => $customerId,
+        'title'              => $title,
         'planned_start_date' => $plannedStartDate,
         'planned_end_date'   => $plannedEndDate,
         'plan_content'       => $planContent,

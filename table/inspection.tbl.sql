@@ -4,6 +4,7 @@
 CREATE TABLE IF NOT EXISTS `inspection` (
     `id`             INT UNSIGNED NOT NULL AUTO_INCREMENT          COMMENT '점검 고유 ID',
     `customer_id`    INT UNSIGNED NOT NULL                         COMMENT '고객사 ID (FK)',
+    `title`          VARCHAR(255) NOT NULL                         COMMENT '점검 제목',
     `planned_start_date` DATE NOT NULL                             COMMENT '점검 계획 시작일',
     `planned_end_date`   DATE NULL         DEFAULT NULL            COMMENT '점검 계획 종료일',
     `plan_content`       TEXT NOT NULL                             COMMENT '점검 계획 내용',

@@ -13,11 +13,12 @@ class InspectionSQL
         try {
             $stmt = $this->db->prepare(
                 'INSERT INTO `inspection`
-                 (`customer_id`, `planned_start_date`, `planned_end_date`, `plan_content`, `actual_start_date`, `actual_end_date`, `report_content`, `issues`, `status`, `created_by`)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+                 (`customer_id`, `title`, `planned_start_date`, `planned_end_date`, `plan_content`, `actual_start_date`, `actual_end_date`, `report_content`, `issues`, `status`, `created_by`)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
             );
             $stmt->execute([
                 (int) $data['customer_id'],
+                $data['title'],
                 $data['planned_start_date'],
                 $data['planned_end_date'] ?? $data['planned_start_date'],
                 $data['plan_content'],
@@ -53,10 +54,11 @@ class InspectionSQL
         try {
             $stmt = $this->db->prepare(
                 'UPDATE `inspection`
-                 SET `planned_start_date`=?, `planned_end_date`=?, `plan_content`=?, `actual_start_date`=?, `actual_end_date`=?, `report_content`=?, `issues`=?, `status`=?
+                 SET `title`=?, `planned_start_date`=?, `planned_end_date`=?, `plan_content`=?, `actual_start_date`=?, `actual_end_date`=?, `report_content`=?, `issues`=?, `status`=?
                  WHERE `id`=?'
             );
             $stmt->execute([
+                $data['title'],
                 $data['planned_start_date'],
                 $data['planned_end_date'] ?? $data['planned_start_date'],
                 $data['plan_content'],

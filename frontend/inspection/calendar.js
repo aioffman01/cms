@@ -194,9 +194,8 @@ function renderCalendar() {
       const itemEl = document.createElement('div');
       itemEl.className = `calendar-item ${ins.status}`;
       
-      const memberNames = (ins.members || []).map(m => m.name).join(',');
-      itemEl.textContent = `${ins.customer_company} / ${memberNames}`;
-      itemEl.title = `[${ins.status === 'completed' ? '완료' : '예정'}] ${ins.customer_company} - 계획: ${ins.plan_content}`;
+      itemEl.textContent = ins.title || '정기점검';
+      itemEl.title = `[${ins.status === 'completed' ? '점검완료' : '점검예정'}] ${ins.customer_company} - ${ins.title || '정기점검'}\n계획: ${ins.plan_content}`;
 
       itemEl.addEventListener('click', (e) => {
         e.stopPropagation();

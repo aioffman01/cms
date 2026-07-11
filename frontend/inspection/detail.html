@@ -3,37 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CMS — 점검 목록</title>
-  <meta name="description" content="고객사 점검 계획 및 결과 보고서 목록입니다.">
+  <title>CMS — 점검 상세</title>
+  <meta name="description" content="점검 상세 정보 및 결과 보고서를 확인합니다.">
   <link rel="stylesheet" href="../common/style.css?v=5">
   <style>
-    .member-checkbox-list {
-      max-height: 120px;
-      overflow-y: auto;
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .detail-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .info-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .info-value {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-main);
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 10px;
-      background: rgba(0, 0, 0, 0.2);
-    }
-    .member-checkbox-item {
+      min-height: 42px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 6px;
-      cursor: pointer;
     }
-    .member-checkbox-item input {
-      cursor: pointer;
-    }
-    .member-badge {
-      display: inline-block;
-      background: rgba(20, 184, 166, 0.15);
-      color: var(--accent);
-      border: 1px solid rgba(20, 184, 166, 0.3);
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-size: 11px;
-      margin-right: 4px;
+    .info-value.textarea {
+      align-items: flex-start;
+      min-height: 100px;
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -44,37 +49,67 @@
 
   <main class="main-content">
     <div class="page-header">
-      <h1 class="page-title">점검 <span>목록</span></h1>
-      <button class="btn btn-primary" id="btn-add-inspection">+ 점검 계획 등록</button>
+      <h1 class="page-title">점검 <span>상세 정보</span></h1>
+      <div class="flex gap-2">
+        <a href="list.html" class="btn btn-ghost">← 목록으로</a>
+        <button class="btn btn-primary" id="btn-edit-inspection" style="display:none;">점검 계획 수정</button>
+        <button class="btn btn-success" id="btn-report-inspection" style="display:none;">점검 보고 작성</button>
+        <button class="btn btn-danger" id="btn-delete-inspection" style="display:none;">점검 삭제</button>
+      </div>
     </div>
 
     <div class="content-area">
       <div id="msg-area"></div>
-
-      <!-- 필터 바 -->
-      <div class="card mb-4">
-        <div class="card-body flex justify-between items-center flex-wrap gap-4" style="padding: 16px 20px;">
-          <div class="flex items-center gap-4">
-            <label class="member-checkbox-item" style="margin-bottom:0;">
-              <input type="checkbox" id="filter-my-work">
-              <span>내 점검만 보기</span>
-            </label>
-            <div class="flex items-center gap-2">
-              <span class="text-sm text-muted">상태:</span>
-              <select class="form-select" id="filter-status" style="padding: 6px 12px; font-size: 13px;">
-                <option value="">전체</option>
-                <option value="scheduled">예정</option>
-                <option value="completed">완료</option>
-              </select>
-            </div>
+      
+      <div id="detail-loading" class="loading"><div class="spinner"></div>불러오는 중...</div>
+      
+      <!-- 상세 카드 -->
+      <div class="card" id="detail-card" style="display:none; padding: 24px; margin-bottom: 24px;">
+        <div class="detail-grid">
+          <div class="form-group" style="grid-column: span 2;">
+            <div class="info-label">점검 제목</div>
+            <div class="info-value" id="val-title" style="font-size: 18px; font-weight: bold; border-color: var(--accent);"></div>
           </div>
-        </div>
-      </div>
+          
+          <div class="form-group">
+            <div class="info-label">대상 고객사</div>
+            <div class="info-value" id="val-customer"></div>
+          </div>
+          
+          <div class="form-group">
+            <div class="info-label">진행 상태</div>
+            <div id="val-status"></div>
+          </div>
+          
+          <div class="form-group">
+            <div class="info-label">점검 계획 일정</div>
+            <div class="info-value" id="val-planned-date"></div>
+          </div>
+          
+          <div class="form-group">
+            <div class="info-label">실제 점검 완료일</div>
+            <div class="info-value" id="val-actual-date"></div>
+          </div>
+          
+          <div class="form-group" style="grid-column: span 2;">
+            <div class="info-label">점검 담당자</div>
+            <div class="info-value" id="val-assignees" style="flex-wrap: wrap; gap: 6px;"></div>
+          </div>
+          
+          <div class="form-group" style="grid-column: span 2;">
+            <div class="info-label">점검 계획 내용</div>
+            <div class="info-value textarea" id="val-plan-content"></div>
+          </div>
 
-      <!-- 테이블 카드 -->
-      <div class="card">
-        <div id="table-area">
-          <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+          <div class="form-group" style="grid-column: span 2; display:none;" id="group-report">
+            <div class="info-label">점검결과</div>
+            <div class="info-value textarea" id="val-report-content" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.02);"></div>
+          </div>
+
+          <div class="form-group" style="grid-column: span 2; display:none;" id="group-issues">
+            <div class="info-label">이슈사항</div>
+            <div class="info-value textarea" id="val-issues" style="border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.02);"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -84,12 +119,12 @@
 <!-- 점검 계획 등록/수정 모달 -->
 <div class="modal-overlay" id="inspection-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="max-width: 550px;">
-    <div class="modal-title" id="modal-title">점검 계획 등록</div>
+    <div class="modal-title" id="modal-title">점검 계획 수정</div>
     <div class="modal-body">
       <form id="inspection-form" novalidate>
         <div class="form-group">
           <label class="form-label" for="customer-id">대상 고객사 <span class="text-accent">*</span></label>
-          <select class="form-select" id="customer-id" required>
+          <select class="form-select" id="customer-id" disabled style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
             <option value="">-- 고객사 선택 --</option>
           </select>
         </div>
@@ -128,7 +163,6 @@
           <div id="selected-members-list" class="flex flex-wrap gap-2 mt-2" style="min-height: 38px; padding: 6px 12px; border: 1px dashed var(--border); border-radius: var(--radius); background: rgba(0,0,0,0.15); align-items: center;">
             <!-- 선택된 담당자 뱃지들이 동적으로 들어감 -->
           </div>
-          <div class="form-hint">드롭다운 메뉴에서 담당자를 클릭하여 추가하세요. 클릭된 담당자는 아래에 뱃지로 나타납니다.</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="plan-content">점검 계획 내용 <span class="text-accent">*</span></label>
@@ -138,7 +172,7 @@
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="modal-cancel">취소</button>
-      <button class="btn btn-primary" id="modal-submit" form="inspection-form">등록</button>
+      <button class="btn btn-primary" id="modal-submit" form="inspection-form">계획 수정</button>
     </div>
   </div>
 </div>
@@ -172,6 +206,6 @@
 
 <script src="../common/api.js?v=5"></script>
 <script src="../common/layout.js?v=5"></script>
-<script src="list.js?v=5"></script>
+<script src="detail.js?v=5"></script>
 </body>
 </html>

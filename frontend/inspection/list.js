@@ -146,7 +146,6 @@ function renderTable(inspections) {
     if (i.status === 'scheduled') {
       actionBtn = `
         <button class="btn btn-sm btn-success" onclick="openReportModal(${i.id}, '${escHtml(i.customer_company)}')">점검 보고</button>
-        <button class="btn btn-sm btn-secondary" onclick="openEditModal(${i.id})">수정</button>
       `;
     } else {
       actionBtn = `
@@ -159,6 +158,11 @@ function renderTable(inspections) {
     return `
       <tr class="${i.status === 'completed' ? 'row-hidden' : ''}">
         <td><span class="font-bold">${escHtml(i.customer_company)}</span></td>
+        <td>
+          <a href="detail.html?id=${i.id}" class="text-accent hover:underline font-semibold" style="text-decoration:none;">
+            ${escHtml(i.title || '정기 시스템 점검')}
+          </a>
+        </td>
         <td>${statusBadge}</td>
         <td>${memberBadges}</td>
         <td>${plannedDateStr}</td>
@@ -181,6 +185,7 @@ function renderTable(inspections) {
         <thead>
           <tr>
             <th>고객사</th>
+            <th>점검 제목</th>
             <th>상태</th>
             <th>점검 담당자</th>
             <th>점검 예정일</th>
@@ -288,12 +293,14 @@ function setupEvents() {
     e.preventDefault();
 
     const customerId = document.getElementById('customer-id').value;
+    const title = document.getElementById('inspection-title').value.trim();
     const startDate = document.getElementById('planned-start-date').value;
     const isRange = document.querySelector('input[name="plan-date-type"]:checked').value === 'range';
     const endDate = isRange ? document.getElementById('planned-end-date').value : startDate;
     const planContent = document.getElementById('plan-content').value.trim();
 
     if (!customerId) { alert('대상 고객사를 선택해주세요.'); return; }
+    if (!title) { alert('점검 제목을 입력해주세요.'); return; }
     if (!startDate) { alert('점검 시작일을 선택해주세요.'); return; }
     if (isRange && !endDate) { alert('점검 종료일을 선택해주세요.'); return; }
     if (isRange && endDate < startDate) { alert('종료일은 시작일보다 빠를 수 없습니다.'); return; }
@@ -302,6 +309,7 @@ function setupEvents() {
 
     const payload = {
       customer_id: parseInt(customerId),
+      title: title,
       planned_start_date: startDate,
       planned_end_date: endDate,
       plan_content: planContent,
