@@ -116,67 +116,6 @@
   </main>
 </div>
 
-<!-- 점검 계획 등록/수정 모달 -->
-<div class="modal-overlay" id="inspection-modal">
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" style="max-width: 550px;">
-    <div class="modal-title" id="modal-title">점검 계획 수정</div>
-    <div class="modal-body">
-      <form id="inspection-form" novalidate>
-        <div class="form-group">
-          <label class="form-label" for="customer-id">대상 고객사 <span class="text-accent">*</span></label>
-          <select class="form-select" id="customer-id" disabled style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
-            <option value="">-- 고객사 선택 --</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="inspection-title">점검 제목 <span class="text-accent">*</span></label>
-          <input class="form-input" type="text" id="inspection-title" placeholder="예: 7월 정기 서버 점검" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">점검 기간 구분</label>
-          <div class="flex gap-4 mb-2">
-            <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
-              <input type="radio" name="plan-date-type" value="single" checked>
-              <span>하루</span>
-            </label>
-            <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
-              <input type="radio" name="plan-date-type" value="range">
-              <span>기간 선택</span>
-            </label>
-          </div>
-        </div>
-        <div class="form-group flex gap-2" id="plan-date-container">
-          <div style="flex:1;">
-            <label class="form-label" for="planned-start-date">시작일 <span class="text-accent">*</span></label>
-            <input class="form-input" type="date" id="planned-start-date" required>
-          </div>
-          <div style="flex:1; display:none;" id="plan-end-date-wrapper">
-            <label class="form-label" for="planned-end-date">종료일 <span class="text-accent">*</span></label>
-            <input class="form-input" type="date" id="planned-end-date">
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="member-dropdown">점검 담당자 추가 <span class="text-accent">*</span></label>
-          <select class="form-select" id="member-dropdown">
-            <option value="">-- 담당자 선택 (관리자/작업자) --</option>
-          </select>
-          <div id="selected-members-list" class="flex flex-wrap gap-2 mt-2" style="min-height: 38px; padding: 6px 12px; border: 1px dashed var(--border); border-radius: var(--radius); background: rgba(0,0,0,0.15); align-items: center;">
-            <!-- 선택된 담당자 뱃지들이 동적으로 들어감 -->
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="plan-content">점검 계획 내용 <span class="text-accent">*</span></label>
-          <textarea class="form-input" id="plan-content" rows="4" placeholder="점검 예정 내용 및 계획을 상세히 기술하세요" required style="resize: vertical; min-height: 80px;"></textarea>
-        </div>
-      </form>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" id="modal-cancel">취소</button>
-      <button class="btn btn-primary" id="modal-submit" form="inspection-form">계획 수정</button>
-    </div>
-  </div>
-</div>
-
 <!-- 점검 결과 보고서 작성 모달 -->
 <div class="modal-overlay" id="report-modal">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="report-modal-title" style="max-width: 550px;">
