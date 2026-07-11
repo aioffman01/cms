@@ -157,8 +157,8 @@ function renderDetail() {
     document.getElementById('group-issues').style.display = 'block';
     document.getElementById('val-issues').textContent = d.issues || '(이슈사항 없음)';
 
-    // 완료된 경우 보고 및 수정 불가, 삭제만 허용
-    document.getElementById('btn-edit-inspection').style.display = 'none';
+    // 완료된 경우: 수정 가능(계획+결과 보고서 수정), 보고서 작성(신규 등록) 버튼만 숨김
+    document.getElementById('btn-edit-inspection').style.display = 'inline-block';
     document.getElementById('btn-report-inspection').style.display = 'none';
     document.getElementById('btn-delete-inspection').style.display = 'inline-block';
   } else {
@@ -230,6 +230,19 @@ function setupEvents() {
     selectedMemberIds = d.members.map(m => m.id);
     renderSelectedMembers();
 
+    // 완료 상태일 때 점검결과 및 이슈 수정 인풋도 보여주고 채워줌
+    if (d.status === 'completed') {
+      document.getElementById('edit-report-fields-wrapper').style.display = 'block';
+      document.getElementById('edit-report-content').value = d.report_content || '';
+      document.getElementById('edit-report-content').required = true;
+      document.getElementById('edit-report-issues').value = d.issues || '';
+    } else {
+      document.getElementById('edit-report-fields-wrapper').style.display = 'none';
+      document.getElementById('edit-report-content').value = '';
+      document.getElementById('edit-report-content').required = false;
+      document.getElementById('edit-report-issues').value = '';
+    }
+
     document.getElementById('inspection-modal').classList.add('active');
   });
 
@@ -279,10 +292,21 @@ function setupEvents() {
       status: inspectionData.status
     };
 
+    if (inspectionData.status === 'completed') {
+      const reportContent = document.getElementById('edit-report-content').value.trim();
+      const issues = document.getElementById('edit-report-issues').value.trim();
+      if (!reportContent) { alert('점검결과 내용을 입력해주세요.'); return; }
+      
+      payload.report_content = reportContent;
+      payload.issues = issues;
+      payload.actual_start_date = inspectionData.actual_start_date;
+      payload.actual_end_date = inspectionData.actual_end_date;
+    }
+
     const res = await API.put('/inspection/update.php', payload);
     if (res.success) {
       document.getElementById('inspection-modal').classList.remove('active');
-      showAlert(document.getElementById('msg-area'), '점검 계획이 정상적으로 수정되었습니다.', 'success');
+      showAlert(document.getElementById('msg-area'), '점검 정보가 정상적으로 수정되었습니다.', 'success');
       await loadInspectionDetail();
     } else {
       alert(res.message || '수정 오류');

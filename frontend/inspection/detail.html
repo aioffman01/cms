@@ -52,7 +52,7 @@
       <h1 class="page-title">점검 <span>상세 정보</span></h1>
       <div class="flex gap-2">
         <a href="list.html" class="btn btn-ghost">← 목록으로</a>
-        <button class="btn btn-primary" id="btn-edit-inspection" style="display:none;">점검 계획 수정</button>
+        <button class="btn btn-primary" id="btn-edit-inspection" style="display:none;">점검 수정</button>
         <button class="btn btn-success" id="btn-report-inspection" style="display:none;">점검 보고 작성</button>
         <button class="btn btn-danger" id="btn-delete-inspection" style="display:none;">점검 삭제</button>
       </div>
@@ -168,11 +168,21 @@
           <label class="form-label" for="plan-content">점검 계획 내용 <span class="text-accent">*</span></label>
           <textarea class="form-input" id="plan-content" rows="4" placeholder="점검 예정 내용 및 계획을 상세히 기술하세요" required style="resize: vertical; min-height: 80px;"></textarea>
         </div>
+        <div id="edit-report-fields-wrapper" style="display:none;">
+          <div class="form-group">
+            <label class="form-label" for="edit-report-content">점검결과 <span class="text-accent">*</span></label>
+            <textarea class="form-input" id="edit-report-content" rows="4" placeholder="점검 결과를 상세히 입력하세요" style="resize: vertical; min-height: 80px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-report-issues">이슈사항</label>
+            <textarea class="form-input" id="edit-report-issues" rows="3" placeholder="발생한 이슈 및 특이사항을 입력하세요" style="resize: vertical; min-height: 60px;"></textarea>
+          </div>
+        </div>
       </form>
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" id="modal-cancel">취소</button>
-      <button class="btn btn-primary" id="modal-submit" form="inspection-form">계획 수정</button>
+      <button class="btn btn-primary" id="modal-submit" form="inspection-form">수정 완료</button>
     </div>
   </div>
 </div>
