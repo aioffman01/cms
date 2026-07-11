@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../common/Response.php';
 require_once __DIR__ . '/../../lib_sql/MemberSQL.php';
 
 header('Content-Type: application/json; charset=utf-8');
-Auth::requireAdmin();
+Auth::requireLogin();
 
 try {
     $memberSQL = new MemberSQL(DB::getInstance());
