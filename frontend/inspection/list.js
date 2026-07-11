@@ -153,27 +153,20 @@ function renderTable(inspections) {
       `;
     }
 
-    const deleteBtn = `<button class="btn btn-sm btn-danger" onclick="deleteInspection(${i.id})">삭제</button>`;
-
     return `
       <tr class="${i.status === 'completed' ? 'row-hidden' : ''}">
+        <td>${statusBadge}</td>
         <td><span class="font-bold">${escHtml(i.customer_company)}</span></td>
         <td>
           <a href="detail.html?id=${i.id}" class="text-accent hover:underline font-semibold" style="text-decoration:none;">
             ${escHtml(i.title || '정기 시스템 점검')}
           </a>
         </td>
-        <td>${statusBadge}</td>
         <td>${memberBadges}</td>
         <td>${plannedDateStr}</td>
-        <td>${actualDateStr}</td>
-        <td style="max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escHtml(i.plan_content)}">
-          ${escHtml(i.plan_content)}
-        </td>
         <td>
           <div class="td-actions">
             ${actionBtn}
-            ${deleteBtn}
           </div>
         </td>
       </tr>`;
@@ -184,14 +177,12 @@ function renderTable(inspections) {
       <table class="data-table">
         <thead>
           <tr>
-            <th>고객사</th>
-            <th>점검 제목</th>
-            <th>상태</th>
+            <th style="width: 100px;">상태</th>
+            <th style="width: 250px;">고객사</th>
+            <th style="width: 380px;">점검 제목</th>
             <th>점검 담당자</th>
-            <th>점검 예정일</th>
-            <th>실제 점검일</th>
-            <th>점검 계획 내용</th>
-            <th>관리</th>
+            <th style="width: 160px;">점검 예정일</th>
+            <th style="width: 100px;">관리</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
