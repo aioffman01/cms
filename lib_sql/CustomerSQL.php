@@ -11,8 +11,8 @@ class CustomerSQL
     {
         $stmt = $this->db->prepare(
             'INSERT INTO `customer`
-             (`company_name`, `company_addr`, `contact_name`, `contact_phone`, `contact_email`, `created_by`)
-             VALUES (?, ?, ?, ?, ?, ?)'
+             (`company_name`, `company_addr`, `contact_name`, `contact_phone`, `contact_email`, `description`, `created_by`)
+             VALUES (?, ?, ?, ?, ?, ?, ?)'
         );
         $stmt->execute([
             $data['company_name'],
@@ -20,6 +20,7 @@ class CustomerSQL
             $data['contact_name']  ?? '',
             $data['contact_phone'] ?? '',
             $data['contact_email'] ?? '',
+            $data['description']   ?? null,
             $data['created_by'],
         ]);
         return (int) $this->db->lastInsertId();
@@ -31,7 +32,7 @@ class CustomerSQL
         $stmt = $this->db->prepare(
             'UPDATE `customer`
              SET `company_name` = ?, `company_addr` = ?,
-                 `contact_name` = ?, `contact_phone` = ?, `contact_email` = ?
+                 `contact_name` = ?, `contact_phone` = ?, `contact_email` = ?, `description` = ?
              WHERE `id` = ?'
         );
         return $stmt->execute([
@@ -40,6 +41,7 @@ class CustomerSQL
             $data['contact_name']  ?? '',
             $data['contact_phone'] ?? '',
             $data['contact_email'] ?? '',
+            $data['description']   ?? null,
             $id,
         ]);
     }

@@ -30,26 +30,26 @@
         <div class="card-body">
           <form id="product-form" novalidate>
             <div class="form-group">
+              <label class="form-label" for="product-name">제품 이름 <span class="text-accent">*</span></label>
+              <input class="form-input" type="text" id="product-name" placeholder="제품 식별용 이름 (예: 마구스-01)" required>
+            </div>
+            <div class="form-group">
               <label class="form-label" for="model-name">제품 모델명 <span class="text-accent">*</span></label>
-              <input class="form-input" type="text" id="model-name"
-                     placeholder="판매된 제품 모델명" required>
+              <select class="form-select" id="model-name" required>
+                <option value="">-- 제품 모델 선택 --</option>
+              </select>
             </div>
             <div class="form-group">
               <label class="form-label" for="license">제품 버전</label>
-              <input class="form-input" type="text" id="license"
-                     placeholder="예) v2.0, Enterprise Edition">
+              <select class="form-select" id="license">
+                <option value="">-- 제품 버전 선택 --</option>
+              </select>
             </div>
             <div class="form-group">
               <label class="form-label" for="os-type">설치 OS</label>
-              <input class="form-input" type="text" id="os-type"
-                     placeholder="예) Rocky Linux 9.2, Windows Server 2022">
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="hardware-id">연결 하드웨어 (선택)</label>
-              <select class="form-select" id="hardware-id">
-                <option value="">-- 하드웨어 선택 안 함 --</option>
+              <select class="form-select" id="os-type">
+                <option value="">-- 설치 OS 선택 --</option>
               </select>
-              <div class="form-hint">판매 제품에 연결된 하드웨어를 선택하세요.</div>
             </div>
             <div class="form-group">
               <label class="form-label" for="installed-at">설치일</label>
@@ -69,8 +69,8 @@
     </div>
   </main>
 </div>
-<script src="../common/api.js?v=4"></script>
-<script src="../common/layout.js"></script>
-<script src="form.js"></script>
+<script src="../common/api.js?v=8"></script>
+<script src="../common/layout.js?v=8"></script>
+<script src="form.js?v=8"></script>
 </body>
 </html>

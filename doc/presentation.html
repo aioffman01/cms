@@ -376,7 +376,8 @@
     <li class="nav-item"><a class="nav-link inner-link" onclick="gotoSlide(5)">Slide 05: 데이터베이스 스키마</a></li>
     <li class="nav-item"><a class="nav-link inner-link" onclick="gotoSlide(6)">Slide 06: API 설계 및 보안</a></li>
     <li class="nav-item"><a class="nav-link inner-link" onclick="gotoSlide(7)">Slide 07: 아키텍처 효과</a></li>
-    <li class="nav-item"><a class="nav-link inner-link" onclick="gotoSlide(8)">Slide 08: 기대 효과 및 결론</a></li>
+    <li class="nav-item"><a class="nav-link inner-link" onclick="gotoSlide(8)">Slide 08: OpenAPI 3.0 협업</a></li>
+    <li class="nav-item"><a class="nav-link inner-link" onclick="gotoSlide(9)">Slide 09: 기대 효과 및 결론</a></li>
   </ul>
 </aside>
 
@@ -408,8 +409,8 @@
             <p>기업 고객 정보의 안전한 등록 및 관리와 함께, 임직원 권한에 기반한 정보 숨김 제어 기능을 지원하여 중요 기업 정보의 보안 노출 리스크를 완전히 통제합니다.</p>
           </div>
           <div class="card">
-            <h3>✦ 고객별 인프라 매핑 관리</h3>
-            <p>납품된 하드웨어 장비 스펙 카탈로그와 고객별 소프트웨어 설치 이력(설치 OS, 라이센스 키, 달력 UI 기반 설치일 관리)의 데이터 정합성을 제공합니다.</p>
+            <h3>✦ 고객별 소프트웨어 제품 관리</h3>
+            <p>대항목 및 세부 항목 옵션 관리 체계 구축과 고객별 소프트웨어 설치 이력(제품이름, 설치 버전, 설치 OS, 업그레이드 참고사항 및 이력 타임라인 관리)의 데이터 정합성을 제공합니다.</p>
           </div>
         </div>
       </div>
@@ -444,27 +445,28 @@
       <div class="slide-content">
         <div style="display: grid; grid-template-columns: 380px 1fr; gap: 30px;">
           <div class="code-tree-box">CMS/
-├── openapi/        # API YAML 명세서
+├── openapi/        # API YAML 명세서 (v1 동기화)
 │   ├── member.yaml
 │   ├── customer.yaml
-│   ├── hardware.yaml
-│   └── product.yaml
+│   ├── product.yaml
+│   ├── mng_category.yaml
+│   └── mng_item.yaml
 ├── backend/        # RESTful API 엔드포인트
+│   ├── v1/         # 1차 Release v1 프록시 레이어
 │   ├── member/     # 가입, 로그인, 목록 제어
-│   ├── customer/   # 고객 목록 및 활성 스위칭
-│   ├── product/    # 라이센스 및 OS 설치 이력
-│   └── hardware/   # 카탈로그 등록/수정
+│   ├── customer/   # 고객 목록 및 상세 정보
+│   ├── product/    # 버전/OS 변경 이력 및 업그레이드
+│   └── mng_item/   # 세부 옵션 CRUD
 ├── frontend/       # SPA 화면 및 스타일시트
 │   ├── common/     # style.css, api.js, layout.js
-│   ├── auth/       # 로그인, 임직원 등록
+│   ├── category/   # 대항목 및 세부 코드 관리 화면
 │   └── customer/   # 고객 상세 및 제품 리스트
-├── lib_sql/        # PDO기반 테이블 쿼리 클래스
-└── table/          # 스키마 DDL 및 기초 데이터</div>
+└── lib_sql/        # PDO기반 테이블 쿼리 클래스</div>
           <div class="bullet-list" style="margin-top: 0; display:flex; flex-direction:column; justify-content:center;">
-            <li style="font-size:15px"><strong>openapi/</strong>: FE/BE 개발 약속이 정의된 YAML 명세서 수록. (하드웨어/제품 보완 완료)</li>
-            <li style="font-size:15px"><strong>backend/</strong>: PHP 세션 인증(Auth)과 Response 공통 모듈이 호출되는 API 영역.</li>
-            <li style="font-size:15px"><strong>frontend/</strong>: CSS 테마 및 사이드바 공통 렌더링, JSON 비동기 API 통신을 담당하는 UI 영역.</li>
-            <li style="font-size:15px"><strong>lib_sql/</strong>: 테이블별 데이터 연산(SQL) 클래스를 캡슐화하여 비즈니스 레이어 격리.</li>
+            <li style="font-size:15px"><strong>openapi/</strong>: FE/BE 개발 약속이 정의된 YAML 명세서 수록. (v1 서버 및 대항목/점검 추가 완료)</li>
+            <li style="font-size:15px"><strong>backend/v1/</strong>: 모든 외부 API 요청을 v1 주소로 단일화 해주는 프록시 레이어 도입.</li>
+            <li style="font-size:15px"><strong>frontend/</strong>: 카테고리 관리 화면 신설 및 Midnight Aurora 디자인 기반 UI 영역.</li>
+            <li style="font-size:15px"><strong>lib_sql/</strong>: 카테고리/세부항목/이력관리 전용 SQL 쿼리 라이브러리 추가 탑재.</li>
           </div>
         </div>
       </div>
@@ -488,26 +490,32 @@
             <tr>
               <td style="color:#ffffff; font-weight:700">member</td>
               <td>임직원 계정 테이블</td>
-              <td>id, login_id, password (bcrypt), role, created_at</td>
+              <td>id, login_id, password, role, created_at</td>
               <td>관리자(admin)와 사원(user) 역할 구분</td>
             </tr>
             <tr>
               <td style="color:#ffffff; font-weight:700">customer</td>
               <td>고객사 정보 테이블</td>
-              <td>id, company_name, is_hidden, created_by</td>
-              <td>is_hidden=1 시 일반 계정엔 조회 차단</td>
-            </tr>
-            <tr>
-              <td style="color:#ffffff; font-weight:700">hardware</td>
-              <td>장비 카탈로그 테이블</td>
-              <td>id, model_name, cpu_count, disk_tb, nic_count, is_active</td>
-              <td>관리자만 사양 카탈로그 수정 가능</td>
+              <td>id, company_name, description, is_hidden</td>
+              <td>description(기타사항) 수록, 일반계정 숨김지원</td>
             </tr>
             <tr>
               <td style="color:#ffffff; font-weight:700">product</td>
-              <td>설치 제품 매핑 테이블</td>
-              <td>id, customer_id, hardware_id, os_type, installed_at</td>
-              <td>Customer 1 : N Product (하드웨어 정보 SET NULL 연동)</td>
+              <td>설치 제품 테이블</td>
+              <td>id, customer_id, name, model_name, version, os_type</td>
+              <td>name(제품이름) 컬럼 추가, 하드웨어 연동 제거</td>
+            </tr>
+            <tr>
+              <td style="color:#ffffff; font-weight:700">mng_category</td>
+              <td>대항목 카테고리</td>
+              <td>id, code (HW/MAGUX_VER/OS), name, description</td>
+              <td>제품 옵션의 상위 카테고리 (1 : N mng_item)</td>
+            </tr>
+            <tr>
+              <td style="color:#ffffff; font-weight:700">product_history</td>
+              <td>제품 업그레이드 이력</td>
+              <td>id, product_id, old_version_code, new_version_code, notes</td>
+              <td>제품 스펙 업그레이드 이력 및 참고사항 타임라인 로깅</td>
             </tr>
           </tbody>
         </table>
@@ -553,10 +561,140 @@
       </div>
     </div>
 
-    <!-- Slide 8: 결론 및 비전 -->
+    <!-- Slide 8: OpenAPI 3.0 기반 협업 워크플로우 -->
     <div class="slide" id="slide-8">
       <div class="slide-num">Slide 08</div>
-      <h2 class="slide-title">7. 기대 효과 <span>및 결론</span></h2>
+      <h2 class="slide-title">7. OpenAPI 3.0 <span>기반 협업 워크플로우</span></h2>
+      <div class="slide-content" style="position: relative; display: flex; align-items: center; justify-content: center; height: 100%; min-height: 400px; margin-top: -20px;">
+        
+        <style>
+          .collab-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          
+          /* 중앙 OpenAPI 원 */
+          .center-openapi {
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #14b8a6, #3b82f6);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 35px rgba(20, 184, 166, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.2);
+            z-index: 10;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+          }
+          
+          .center-openapi h3 {
+            color: #ffffff;
+            font-size: 19px;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+          }
+          
+          .center-openapi p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 11px;
+            margin-top: 6px;
+            font-weight: 600;
+            line-height: 1.4;
+          }
+
+          /* 주변 협업 역할 카드 */
+          .collab-card {
+            position: absolute;
+            width: 250px;
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            z-index: 5;
+            transition: transform 0.3s ease;
+          }
+          
+          .collab-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+          }
+
+          .collab-card h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+          
+          .collab-card p {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+          }
+
+          /* 위치 지정 (중앙을 감싸는 삼각형 배치) */
+          .card-planner {
+            top: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top: 3px solid #3b82f6;
+          }
+          
+          .card-frontend {
+            bottom: 10px;
+            left: 30px;
+            border-top: 3px solid #14b8a6;
+          }
+          
+          .card-backend {
+            bottom: 10px;
+            right: 30px;
+            border-top: 3px solid #10b981;
+          }
+        </style>
+
+        <div class="collab-container">
+          <!-- 중앙의 OpenAPI 3.0 허브 -->
+          <div class="center-openapi">
+            <h3>OpenAPI 3.0</h3>
+            <p>단일 진실 공급원<br>(Single Source of Truth)</p>
+          </div>
+
+          <!-- 주변의 3대 협업 주체 -->
+          <div class="collab-card card-planner">
+            <h4 style="color: #3b82f6;">✦ 기획자 (Planner)</h4>
+            <p>비즈니스 요구사항을 수립하여 <strong>OpenAPI 명세 정의</strong>. 기획 의도대로 화면과 로직이 개발되도록 설계의 표준을 세우고 개발자들과 공유합니다.</p>
+          </div>
+
+          <div class="collab-card card-frontend">
+            <h4 style="color: #14b8a6;">✦ Frontend 개발자</h4>
+            <p>중앙의 OpenAPI 규격을 참조하여 백엔드 연동 없이 <strong>Mock API 기반 UI 단독 개발</strong>. 병렬 개발을 통해 시간 지연 없이 UX 화면을 선제 완성합니다.</p>
+          </div>
+
+          <div class="collab-card card-backend">
+            <h4 style="color: #10b981;">✦ Backend 개발자</h4>
+            <p>명세의 입력/출력 타입에 매칭되는 <strong>RESTful API 구현</strong>. 명세에 따른 세션 인증 필터 및 DB 트랜잭션을 구현하여 규격을 엄격히 보장합니다.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 9: 결론 및 비전 -->
+    <div class="slide" id="slide-9">
+      <div class="slide-num">Slide 09</div>
+      <h2 class="slide-title">8. 기대 효과 <span>및 결론</span></h2>
       <div class="slide-content">
         <div class="grid">
           <div class="card">
@@ -579,14 +717,14 @@
     <div class="progress-bar-container">
       <div class="progress-bar" id="pt-progress"></div>
     </div>
-    <span class="slide-indicator" id="slide-ind">1 / 8</span>
+    <span class="slide-indicator" id="slide-ind">1 / 9</span>
     <button class="btn-nav" onclick="nextSlide()">NEXT</button>
   </div>
 </main>
 
 <script>
   let currentSlide = 1;
-  const totalSlides = 8;
+  const totalSlides = 9;
 
   function updateSlide() {
     // 슬라이드 활성화 토글

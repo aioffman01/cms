@@ -55,10 +55,6 @@
       <div class="card mb-4">
         <div class="card-body flex justify-between items-center flex-wrap gap-4" style="padding: 16px 20px;">
           <div class="flex items-center gap-4">
-            <label class="member-checkbox-item" style="margin-bottom:0;">
-              <input type="checkbox" id="filter-my-work">
-              <span>내 점검만 보기</span>
-            </label>
             <div class="flex items-center gap-2">
               <span class="text-sm text-muted">상태:</span>
               <select class="form-select" id="filter-status" style="padding: 6px 12px; font-size: 13px;">
@@ -67,6 +63,7 @@
                 <option value="completed">완료</option>
               </select>
             </div>
+            <button class="btn btn-primary" id="btn-filter-apply" style="padding: 6px 16px; font-size: 13px; margin-left: 4px;">확인</button>
           </div>
         </div>
       </div>
@@ -108,8 +105,8 @@
   </div>
 </div>
 
-<script src="../common/api.js?v=7"></script>
-<script src="../common/layout.js?v=7"></script>
-<script src="list.js?v=7"></script>
+<script src="../common/api.js?v=10"></script>
+<script src="../common/layout.js?v=10"></script>
+<script src="list.js?v=10"></script>
 </body>
 </html>

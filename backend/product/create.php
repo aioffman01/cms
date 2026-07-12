@@ -16,15 +16,17 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') Response::error('POST만 허용됩니
 $input      = json_decode(file_get_contents('php://input'), true) ?? [];
 $customerId = (int)($input['customer_id'] ?? 0);
 $modelName  = trim($input['model_name'] ?? '');
+$name       = trim($input['name'] ?? '');
 $user       = Auth::getUser();
 
 if ($customerId <= 0) Response::error('고객 ID가 필요합니다.');
+if ($name === '') Response::error('제품 이름은 필수 항목입니다.');
 if ($modelName === '') Response::error('제품 모델명은 필수 항목입니다.');
 
 try {
     $id = (new ProductSQL(DB::getInstance()))->create([
         'customer_id'  => $customerId,
-        'hardware_id'  => $input['hardware_id']  ?? null,
+        'name'         => $name,
         'model_name'   => $modelName,
         'version'      => trim($input['version']      ?? ''),
         'os_type'      => trim($input['os_type']      ?? ''),

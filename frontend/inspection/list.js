@@ -20,7 +20,6 @@ let reportingInspectionId = null;
   ]);
 
   setupEvents();
-  setupDateToggleEvents();
 })();
 
 async function loadCustomers() {
@@ -28,12 +27,14 @@ async function loadCustomers() {
   if (res.success) {
     customers = res.data.customers || [];
     const sel = document.getElementById('customer-id');
-    customers.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = c.company_name;
-      sel.appendChild(opt);
-    });
+    if (sel) {
+      customers.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = c.company_name;
+        sel.appendChild(opt);
+      });
+    }
   }
 }
 
@@ -46,13 +47,15 @@ async function loadMembers() {
     const staffMembers = members.filter(m => m.role === 'admin' || m.role === 'worker');
     
     const sel = document.getElementById('member-dropdown');
-    sel.innerHTML = '<option value="">-- 담당자 선택 (관리자/작업자) --</option>';
-    staffMembers.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m.id;
-      opt.textContent = `${m.name} (${m.role === 'admin' ? '관리자' : '작업자'} - ${m.login_id})`;
-      sel.appendChild(opt);
-    });
+    if (sel) {
+      sel.innerHTML = '<option value="">-- 담당자 선택 (관리자/작업자) --</option>';
+      staffMembers.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.id;
+        opt.textContent = `${m.name} (${m.role === 'admin' ? '관리자' : '작업자'} - ${m.login_id})`;
+        sel.appendChild(opt);
+      });
+    }
   }
 }
 
@@ -89,11 +92,9 @@ window.removeSelectedMember = function(id) {
 };
 
 async function loadInspections() {
-  const isMyWork = document.getElementById('filter-my-work').checked;
   const status = document.getElementById('filter-status').value;
 
   const params = {};
-  if (isMyWork) params.member_id = currentUser.id;
   if (status) params.status = status;
 
   const res = await API.get('/inspection/list.php', params);
@@ -191,9 +192,8 @@ function renderTable(inspections) {
 }
 
 function setupEvents() {
-  // 필터 바 리스너
-  document.getElementById('filter-my-work').addEventListener('change', loadInspections);
-  document.getElementById('filter-status').addEventListener('change', loadInspections);
+  // 필터 확인 버튼 리스너
+  document.getElementById('btn-filter-apply').addEventListener('click', loadInspections);
 
   // 계획 등록 페이지 이동
   document.getElementById('btn-add-inspection').addEventListener('click', () => {

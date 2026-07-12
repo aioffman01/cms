@@ -1,0 +1,184 @@
+openapi: 3.0.3
+info:
+  title: CMS 대항목 관리 API
+  version: "1.0.0"
+  description: |
+    기업 고객관리 시스템의 대항목(카테고리) 관련 API 명세서입니다.
+    - 대항목 등록 / 수정 / 삭제 / 조회
+servers:
+  - url: /backend/v1/mng_category
+    description: 대항목 Backend API 서버 v1
+tags:
+  - name: 대항목
+    description: 대항목 정보 CRUD
+paths:
+  /list.php:
+    get:
+      tags: [대항목]
+      summary: 대항목 목록 조회
+      security:
+        - sessionAuth: []
+      responses:
+        "200":
+          description: 대항목 목록
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/CategoryItem'
+
+  /create.php:
+    post:
+      tags: [대항목]
+      summary: 대항목 등록
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name]
+              properties:
+                code:
+                  type: string
+                  description: 대항목 고유 코드 (예: HW, VER)
+                name:
+                  type: string
+                  description: 대항목 이름 (예: 하드웨어, 마구스 버전)
+                description:
+                  type: string
+                  description: 대항목 상세 설명
+      responses:
+        "200":
+          description: 대항목 등록 성공
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          id: { type: integer }
+
+  /update.php:
+    put:
+      tags: [대항목]
+      summary: 대항목 수정
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, code, name]
+              properties:
+                id:
+                  type: integer
+                  description: 수정할 대항목 ID
+                code:
+                  type: string
+                  description: 대항목 고유 코드
+                name:
+                  type: string
+                  description: 대항목 이름
+                description:
+                  type: string
+                  description: 대항목 상세 설명
+      responses:
+        "200":
+          $ref: '#/components/responses/Success'
+
+  /delete.php:
+    delete:
+      tags: [대항목]
+      summary: 대항목 삭제
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id]
+              properties:
+                id:
+                  type: integer
+                  description: 삭제할 대항목 ID
+      responses:
+        "200":
+          $ref: '#/components/responses/Success'
+
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: PHPSESSID
+
+  schemas:
+    CategoryItem:
+      type: object
+      properties:
+        id:          { type: integer }
+        code:        { type: string }
+        name:        { type: string }
+        description: { type: string, nullable: true }
+        created_at:  { type: string, format: date-time }
+        updated_at:  { type: string, format: date-time }
+
+    SuccessResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: true }
+        message: { type: string }
+        data:    {}
+
+    ErrorResponse:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string }
+
+  responses:
+    Success:
+      description: 처리 성공
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+    BadRequest:
+      description: 잘못된 요청
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: 인증 필요
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: 권한 없음
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: 리소스 없음
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

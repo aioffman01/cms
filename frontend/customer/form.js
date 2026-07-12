@@ -36,6 +36,7 @@ async function loadCustomer() {
   document.getElementById('contact-name').value  = c.contact_name  || '';
   document.getElementById('contact-phone').value = c.contact_phone || '';
   document.getElementById('contact-email').value = c.contact_email || '';
+  document.getElementById('description').value   = c.description   || '';
 }
 
 form.addEventListener('submit', async (e) => {
@@ -54,6 +55,7 @@ form.addEventListener('submit', async (e) => {
     contact_name:  document.getElementById('contact-name').value.trim(),
     contact_phone: document.getElementById('contact-phone').value.trim(),
     contact_email: document.getElementById('contact-email').value.trim(),
+    description:   document.getElementById('description').value.trim(),
   };
 
   setLoading(true);

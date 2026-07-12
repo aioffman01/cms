@@ -31,6 +31,7 @@ try {
         'contact_name'  => trim($input['contact_name']  ?? ''),
         'contact_phone' => trim($input['contact_phone'] ?? ''),
         'contact_email' => trim($input['contact_email'] ?? ''),
+        'description'   => trim($input['description']   ?? ''),
         'created_by'    => $user['id'],
     ]);
 

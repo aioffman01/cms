@@ -68,7 +68,7 @@
       letter-spacing: 1.5px;
       text-transform: uppercase;
       font-weight: 700;
-      padding: 0 12px 8px;
+      padding: 16px 12px 8px;
       opacity: 0.6;
     }
 
@@ -282,10 +282,16 @@
       <a class="nav-link inner-link" onclick="showTable('customer')">customer (고객사)</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link inner-link" onclick="showTable('hardware')">hardware (하드웨어)</a>
+      <a class="nav-link inner-link" onclick="showTable('product')">product (설치 제품)</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link inner-link" onclick="showTable('product')">product (설치 제품)</a>
+      <a class="nav-link inner-link" onclick="showTable('mng_category')">mng_category (대항목)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link inner-link" onclick="showTable('mng_item')">mng_item (세부항목)</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link inner-link" onclick="showTable('product_history')">product_history (업그레이드 이력)</a>
     </li>
   </ul>
 </aside>
@@ -294,7 +300,7 @@
 <main class="main-content">
   <header>
     <h1 id="main-header-title">Database Specification: member</h1>
-    <p>선택한 테이블의 스키마 명세 및 초기 데이터 삽입 스크립트</p>
+    <p>선택한 테이블의 스키마 명세 및 설명</p>
   </header>
 
   <!-- ==================== 1. MEMBER TABLE ==================== -->
@@ -348,19 +354,19 @@
           </tr>
           <tr>
             <td class="key">role</td>
-            <td class="type">ENUM('admin', 'user')</td>
+            <td class="type">VARCHAR(20)</td>
             <td>NO</td>
-            <td>MUL (Index)</td>
-            <td class="default">'user'</td>
-            <td class="desc">권한 등급 ('admin' = 관리자, 'user' = 일반사용자)</td>
+            <td>-</td>
+            <td class="default">'engineer'</td>
+            <td class="desc">회원 등급 구분 ('admin' = 관리자, 'engineer' = 일반엔지니어)</td>
           </tr>
           <tr>
             <td class="key">created_at</td>
             <td class="type">DATETIME</td>
             <td>NO</td>
-            <td>MUL (Index)</td>
+            <td>-</td>
             <td class="default">CURRENT_TIMESTAMP</td>
-            <td class="desc">계정 등록 시각</td>
+            <td class="desc">가입 일자 및 시각</td>
           </tr>
           <tr>
             <td class="key">updated_at</td>
@@ -368,19 +374,10 @@
             <td>NO</td>
             <td>-</td>
             <td class="default">CURRENT_TIMESTAMP</td>
-            <td class="desc">계정 수정 시각 (ON UPDATE CURRENT_TIMESTAMP)</td>
+            <td class="desc">회원 정보 수정 시각</td>
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <div class="card">
-      <div class="card-header" style="background: rgba(0,0,0,0.1)">member 초기 삽입 데이터</div>
-      <div style="padding: 20px;">
-        <div class="init-data-box">-- 시스템 최초 구동 시 setup.php를 통해 자동 등록되는 최초 최고 관리자 정보
-INSERT INTO `member` (`id`, `login_id`, `password`, `name`, `role`) 
-VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admin');</div>
-      </div>
     </div>
   </section>
 
@@ -450,6 +447,14 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
             <td class="desc">대표 이메일 주소</td>
           </tr>
           <tr>
+            <td class="key">description</td>
+            <td class="type">TEXT</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">고객 등록 관련 기타 특이사항 메모</td>
+          </tr>
+          <tr>
             <td class="key">is_hidden</td>
             <td class="type">TINYINT(1)</td>
             <td>NO</td>
@@ -484,129 +489,8 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
         </tbody>
       </table>
     </div>
-
-    <div class="card">
-      <div class="card-header" style="background: rgba(0,0,0,0.1)">customer 초기 샘플 데이터</div>
-      <div style="padding: 20px;">
-        <div class="init-data-box">INSERT INTO `customer` (`id`, `company_name`, `company_addr`, `contact_name`, `contact_phone`, `contact_email`, `is_hidden`, `created_by`) VALUES
-(1, '(주)샘플기업', '서울시 강남구 테헤란로 123', '홍길동', '02-1234-5678', 'hong@sample.com', 0, 1),
-(2, '테스트 주식회사', '경기도 성남시 분당구 판교로 456', '김철수', '031-987-6543', 'kim@test.co.kr', 0, 1),
-(3, '글로벌 코퍼레이션', '부산시 해운대구 센텀로 789', '이영희', '051-555-4321', 'lee@global.co.kr', 0, 1);</div>
-      </div>
-    </div>
   </section>
 
-  <!-- ==================== 3. HARDWARE TABLE ==================== -->
-  <section id="sec-hardware" class="table-section">
-    <h2>하드웨어 장비 테이블 (hardware)</h2>
-    <div class="card">
-      <div class="card-header">Table Schema: hardware</div>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 150px;">필드명</th>
-            <th style="width: 150px;">데이터 타입</th>
-            <th style="width: 80px;">Null</th>
-            <th style="width: 100px;">Key</th>
-            <th style="width: 140px;">기본값</th>
-            <th>설명 / 비고</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="key">id</td>
-            <td class="type">INT UNSIGNED</td>
-            <td>NO</td>
-            <td>PRI (Auto Inc)</td>
-            <td class="default">NULL</td>
-            <td class="desc">하드웨어 고유 분류 번호 (PK)</td>
-          </tr>
-          <tr>
-            <td class="key">model_name</td>
-            <td class="type">VARCHAR(200)</td>
-            <td>NO</td>
-            <td>MUL (Index)</td>
-            <td class="default">None</td>
-            <td class="desc">장비 모델 이름 (예: PowerEdge R750)</td>
-          </tr>
-          <tr>
-            <td class="key">cpu_count</td>
-            <td class="type">INT UNSIGNED</td>
-            <td>NO</td>
-            <td>-</td>
-            <td class="default">0</td>
-            <td class="desc">CPU 코어/소켓 수</td>
-          </tr>
-          <tr>
-            <td class="key">disk_tb</td>
-            <td class="type">DECIMAL(10,2)</td>
-            <td>NO</td>
-            <td>-</td>
-            <td class="default">0.00</td>
-            <td class="desc">총 스토리지 용량 (TB 단위)</td>
-          </tr>
-          <tr>
-            <td class="key">nic_count</td>
-            <td class="type">INT UNSIGNED</td>
-            <td>NO</td>
-            <td>-</td>
-            <td class="default">0</td>
-            <td class="desc">네트워크 포트(NIC) 갯수</td>
-          </tr>
-          <tr>
-            <td class="key">note</td>
-            <td class="type">TEXT</td>
-            <td>NO</td>
-            <td>-</td>
-            <td class="default">None</td>
-            <td class="desc">비고 / 장비 특이사항</td>
-          </tr>
-          <tr>
-            <td class="key">is_active</td>
-            <td class="type">TINYINT(1)</td>
-            <td>NO</td>
-            <td>MUL (Index)</td>
-            <td class="default">1</td>
-            <td class="desc">사용/판매 가능 여부 (1 = 활성, 0 = 비활성)</td>
-          </tr>
-          <tr>
-            <td class="key">created_by</td>
-            <td class="type">INT UNSIGNED</td>
-            <td>NO</td>
-            <td>MUL (FK)</td>
-            <td class="default">None</td>
-            <td class="desc">등록 관리자 ID (REFERENCES member(id))</td>
-          </tr>
-          <tr>
-            <td class="key">created_at</td>
-            <td class="type">DATETIME</td>
-            <td>NO</td>
-            <td>-</td>
-            <td class="default">CURRENT_TIMESTAMP</td>
-            <td class="desc">정보 등록 시각</td>
-          </tr>
-          <tr>
-            <td class="key">updated_at</td>
-            <td class="type">DATETIME</td>
-            <td>NO</td>
-            <td>-</td>
-            <td class="default">CURRENT_TIMESTAMP</td>
-            <td class="desc">정보 수정 시각</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="card">
-      <div class="card-header" style="background: rgba(0,0,0,0.1)">hardware 초기 샘플 데이터</div>
-      <div style="padding: 20px;">
-        <div class="init-data-box">INSERT INTO `hardware` (`id`, `model_name`, `cpu_count`, `disk_tb`, `nic_count`, `note`, `is_active`, `created_by`) VALUES
-(1, 'SuperServer 1U-A100', 2, 10.00, 2, '고성능 1U 서버', 1, 1),
-(2, 'PowerEdge R750', 2, 20.00, 4, 'Dell 엔터프라이즈 서버', 1, 1),
-(3, 'ProLiant DL380 Gen10', 4, 15.00, 4, 'HPE 2U 서버', 1, 1);</div>
-      </div>
-    </div>
-  </section>
 
   <!-- ==================== 4. PRODUCT TABLE ==================== -->
   <section id="sec-product" class="table-section">
@@ -642,12 +526,12 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
             <td class="desc">고객사 ID (REFERENCES customer(id) ON DELETE CASCADE)</td>
           </tr>
           <tr>
-            <td class="key">hardware_id</td>
-            <td class="type">INT UNSIGNED</td>
-            <td class="nullable">YES</td>
-            <td>MUL (FK)</td>
-            <td class="default">NULL</td>
-            <td class="desc">연결 하드웨어 ID (REFERENCES hardware(id) ON DELETE SET NULL)</td>
+            <td class="key">name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">설치된 소프트웨어 개별 제품 명칭</td>
           </tr>
           <tr>
             <td class="key">model_name</td>
@@ -655,15 +539,15 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
             <td>NO</td>
             <td>-</td>
             <td class="default">None</td>
-            <td class="desc">설치된 소프트웨어 제품 모델 이름</td>
+            <td class="desc">설치된 소프트웨어 제품 모델 이름 (Dropdown 로드)</td>
           </tr>
           <tr>
-            <td class="key">license</td>
+            <td class="key">version</td>
             <td class="type">VARCHAR(500)</td>
             <td>NO</td>
             <td>-</td>
             <td class="default">''</td>
-            <td class="desc">소프트웨어 라이센스 정보 / 시리얼 키</td>
+            <td class="desc">소프트웨어 마구스 버전 (MAGUX_VER Dropdown)</td>
           </tr>
           <tr>
             <td class="key">os_type</td>
@@ -671,7 +555,7 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
             <td>NO</td>
             <td>-</td>
             <td class="default">''</td>
-            <td class="desc">서버 설치 운영체제 (OS)</td>
+            <td class="desc">서버 설치 운영체제 (OS Dropdown)</td>
           </tr>
           <tr>
             <td class="key">installed_at</td>
@@ -679,7 +563,15 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
             <td class="nullable">YES</td>
             <td>MUL (Index)</td>
             <td class="default">NULL</td>
-            <td class="desc">실 납품/설치된 일자 (달력 UI 바인딩)</td>
+            <td class="desc">실 납품/설치된 일자</td>
+          </tr>
+          <tr>
+            <td class="key">description</td>
+            <td class="type">TEXT</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">설치 제품 세부 비고 사항</td>
           </tr>
           <tr>
             <td class="key">created_by</td>
@@ -708,14 +600,287 @@ VALUES (1, 'admin', '$2y$12$...[bcrypt-hashed-admin1234]...', '관리자', 'admi
         </tbody>
       </table>
     </div>
+  </section>
 
+  <!-- ==================== 5. MNG_CATEGORY TABLE ==================== -->
+  <section id="sec-mng_category" class="table-section">
+    <h2>대항목 카테고리 테이블 (mng_category)</h2>
     <div class="card">
-      <div class="card-header" style="background: rgba(0,0,0,0.1)">product 초기 샘플 데이터</div>
-      <div style="padding: 20px;">
-        <div class="init-data-box">INSERT INTO `product` (`id`, `customer_id`, `hardware_id`, `model_name`, `license`, `os_type`, `installed_at`, `created_by`) VALUES
-(1, 1, 1, 'CMS Enterprise v2.0', 'ENT-2024-XXXX-0001', 'Rocky Linux 9.2', '2024-01-15', 1),
-(2, 1, 2, 'Security Suite Pro', 'SEC-2024-YYYY-0002', 'Windows Server 2022', '2024-03-20', 1);</div>
-      </div>
+      <div class="card-header">Table Schema: mng_category</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">대항목 고유 ID (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">code</td>
+            <td class="type">VARCHAR(100)</td>
+            <td>NO</td>
+            <td>UNI</td>
+            <td class="default">None</td>
+            <td class="desc">대항목 매핑 코드 (예: HW, OS, MAGUX_VER)</td>
+          </tr>
+          <tr>
+            <td class="key">name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">대항목 라벨명 (예: 마구스 버전, 설치 OS)</td>
+          </tr>
+          <tr>
+            <td class="key">description</td>
+            <td class="type">TEXT</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">대항목 설명 비고</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 등록 시각</td>
+          </tr>
+          <tr>
+            <td class="key">updated_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 수정 시각</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== 6. MNG_ITEM TABLE ==================== -->
+  <section id="sec-mng_item" class="table-section">
+    <h2>세부 항목 테이블 (mng_item)</h2>
+    <div class="card">
+      <div class="card-header">Table Schema: mng_item</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">세부 항목 고유 ID (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">category_id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">상위 대항목 ID (REFERENCES mng_category(id) ON DELETE CASCADE)</td>
+          </tr>
+          <tr>
+            <td class="key">code</td>
+            <td class="type">VARCHAR(100)</td>
+            <td>NO</td>
+            <td>UNI</td>
+            <td class="default">None</td>
+            <td class="desc">세부 항목 고유 코드 (예: M1, ROCKY9, V1.0)</td>
+          </tr>
+          <tr>
+            <td class="key">name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">None</td>
+            <td class="desc">세부 항목 명칭 (예: Rocky Linux 9.2)</td>
+          </tr>
+          <tr>
+            <td class="key">is_use</td>
+            <td class="type">ENUM('Y','N')</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">'Y'</td>
+            <td class="desc">사용 가능 유무 플래그</td>
+          </tr>
+          <tr>
+            <td class="key">description</td>
+            <td class="type">TEXT</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">세부 항목에 대한 상세 정보 설명</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 등록 시각</td>
+          </tr>
+          <tr>
+            <td class="key">updated_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">정보 수정 시각</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== 7. PRODUCT_HISTORY TABLE ==================== -->
+  <section id="sec-product_history" class="table-section">
+    <h2>제품 업그레이드 이력 테이블 (product_history)</h2>
+    <div class="card">
+      <div class="card-header">Table Schema: product_history</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 150px;">필드명</th>
+            <th style="width: 150px;">데이터 타입</th>
+            <th style="width: 80px;">Null</th>
+            <th style="width: 100px;">Key</th>
+            <th style="width: 140px;">기본값</th>
+            <th>설명 / 비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="key">id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>PRI (Auto Inc)</td>
+            <td class="default">NULL</td>
+            <td class="desc">이력 고유 번호 (PK)</td>
+          </tr>
+          <tr>
+            <td class="key">product_id</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">제품 ID (REFERENCES product(id) ON DELETE CASCADE)</td>
+          </tr>
+          <tr>
+            <td class="key">old_version_code</td>
+            <td class="type">VARCHAR(100)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">이전 제품 버전 코드</td>
+          </tr>
+          <tr>
+            <td class="key">old_version_name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">이전 제품 버전 이름</td>
+          </tr>
+          <tr>
+            <td class="key">new_version_code</td>
+            <td class="type">VARCHAR(100)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">변경 새 버전 코드</td>
+          </tr>
+          <tr>
+            <td class="key">new_version_name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">변경 새 버전 이름</td>
+          </tr>
+          <tr>
+            <td class="key">old_os_code</td>
+            <td class="type">VARCHAR(100)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">이전 설치 OS 코드</td>
+          </tr>
+          <tr>
+            <td class="key">old_os_name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">이전 설치 OS 이름</td>
+          </tr>
+          <tr>
+            <td class="key">new_os_code</td>
+            <td class="type">VARCHAR(100)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">변경 새 OS 코드</td>
+          </tr>
+          <tr>
+            <td class="key">new_os_name</td>
+            <td class="type">VARCHAR(255)</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">변경 새 OS 이름</td>
+          </tr>
+          <tr>
+            <td class="key">notes</td>
+            <td class="type">TEXT</td>
+            <td class="nullable">YES</td>
+            <td>-</td>
+            <td class="default">NULL</td>
+            <td class="desc">업그레이드 관련 참고사항/메모</td>
+          </tr>
+          <tr>
+            <td class="key">created_by</td>
+            <td class="type">INT UNSIGNED</td>
+            <td>NO</td>
+            <td>MUL (FK)</td>
+            <td class="default">None</td>
+            <td class="desc">작업 실행 임직원 ID (REFERENCES member(id))</td>
+          </tr>
+          <tr>
+            <td class="key">created_at</td>
+            <td class="type">DATETIME</td>
+            <td>NO</td>
+            <td>-</td>
+            <td class="default">CURRENT_TIMESTAMP</td>
+            <td class="desc">이력 기록 등록 시각</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </main>

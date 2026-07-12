@@ -8,8 +8,8 @@ info:
     - [관리자] 제품 등록 / 수정 / 삭제
 
 servers:
-  - url: /backend/product
-    description: 판매 제품 Backend API 서버
+  - url: /backend/v1/product
+    description: 판매 제품 Backend API 서버 v1
 
 tags:
   - name: 제품
@@ -54,7 +54,7 @@ paths:
     get:
       tags: [제품]
       summary: 판매 제품 상세 조회
-      description: 제품 정보 및 연동된 하드웨어 사양 상세를 반환합니다.
+      description: 제품 정보 및 해당 제품의 업그레이드 이력 상세를 반환합니다.
       security:
         - sessionAuth: []
       parameters:
@@ -139,6 +139,44 @@ paths:
         "401":
           $ref: '#/components/responses/Unauthorized'
 
+  /upgrade.php:
+    put:
+      tags: [관리자-제품]
+      summary: "[관리자] 판매 제품 버전/OS 업그레이드"
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, version, os_type]
+              properties:
+                id:
+                  type: integer
+                  description: 업그레이드할 제품 ID
+                version:
+                  type: string
+                  description: 새 제품 버전 이름
+                os_type:
+                  type: string
+                  description: 새 설치 OS 이름
+                notes:
+                  type: string
+                  description: 업그레이드 참고사항
+      responses:
+        "200":
+          $ref: '#/components/responses/Success'
+        "400":
+          $ref: '#/components/responses/BadRequest'
+        "403":
+          $ref: '#/components/responses/Forbidden'
+        "404":
+          $ref: '#/components/responses/NotFound'
+        "401":
+          $ref: '#/components/responses/Unauthorized'
+
   /delete.php:
     delete:
       tags: [관리자-제품]
@@ -176,15 +214,15 @@ components:
   schemas:
     ProductWriteRequest:
       type: object
-      required: [customer_id, model_name]
+      required: [customer_id, name, model_name]
       properties:
         customer_id:
           type: integer
           description: 고객 ID
-        hardware_id:
-          type: integer
-          nullable: true
-          description: 연결할 하드웨어 ID
+        name:
+          type: string
+          maxLength: 255
+          description: 제품 이름
         model_name:
           type: string
           maxLength: 200
@@ -208,7 +246,7 @@ components:
       properties:
         id:              { type: integer }
         customer_id:     { type: integer }
-        hardware_id:     { type: integer, nullable: true }
+        name:            { type: string }
         model_name:      { type: string }
         version:         { type: string }
         os_type:         { type: string }
@@ -216,7 +254,6 @@ components:
         created_by:      { type: integer }
         created_at:      { type: string, format: date-time }
         updated_at:      { type: string, format: date-time }
-        hw_model:        { type: string, nullable: true }
         created_by_name: { type: string }
 
     ProductDetailItem:
@@ -224,19 +261,39 @@ components:
       properties:
         id:              { type: integer }
         customer_id:     { type: integer }
-        hardware_id:     { type: integer, nullable: true }
+        customer_company: { type: string }
+        name:            { type: string }
         model_name:      { type: string }
         version:         { type: string }
         os_type:         { type: string }
         installed_at:    { type: string, format: date, nullable: true }
+        description:     { type: string, nullable: true }
         created_by:      { type: integer }
         created_at:      { type: string, format: date-time }
         updated_at:      { type: string, format: date-time }
-        hw_model:        { type: string, nullable: true }
-        hw_cpu:          { type: integer, nullable: true }
-        hw_disk:         { type: number, format: float, nullable: true }
-        hw_nic:          { type: integer, nullable: true }
         created_by_name: { type: string }
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductHistoryItem'
+
+    ProductHistoryItem:
+      type: object
+      properties:
+        id:                 { type: integer }
+        product_id:         { type: integer }
+        old_version_code:   { type: string, nullable: true }
+        old_version_name:   { type: string, nullable: true }
+        new_version_code:   { type: string, nullable: true }
+        new_version_name:   { type: string, nullable: true }
+        old_os_code:        { type: string, nullable: true }
+        old_os_name:        { type: string, nullable: true }
+        new_os_code:        { type: string, nullable: true }
+        new_os_name:        { type: string, nullable: true }
+        notes:              { type: string, nullable: true }
+        created_by:         { type: integer }
+        created_by_name:    { type: string }
+        created_at:         { type: string, format: date-time }
 
     SuccessResponse:
       type: object

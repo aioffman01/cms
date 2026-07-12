@@ -36,6 +36,7 @@ try {
         'contact_name'  => trim($input['contact_name']  ?? ''),
         'contact_phone' => trim($input['contact_phone'] ?? ''),
         'contact_email' => trim($input['contact_email'] ?? ''),
+        'description'   => trim($input['description']   ?? ''),
     ]);
 
     Response::success(null, '고객 정보가 수정되었습니다.');

@@ -61,28 +61,17 @@ function renderDetail(c, products) {
       </div>`;
   } else {
     const prodRows = products.map(p => {
-      const deleteBtn = isAdmin ? `<button class="btn btn-sm btn-danger" onclick="deleteProduct(${p.id})">삭제</button>` : '';
-      const editBtn = isAdmin ? `<a href="../product/form.html?id=${p.id}&customer_id=${c.id}" class="btn btn-sm btn-secondary">수정</a>` : '';
-      
-      let hwInfo = '<span class="text-muted">-</span>';
-      if (p.hw_model) {
-        hwInfo = `<span class="text-highlight">${escHtml(p.hw_model)}</span>`;
-      }
-
       return `
         <tr>
-          <td><span class="font-bold">${escHtml(p.model_name)}</span></td>
+          <td>
+            <a href="../product/detail.html?id=${p.id}" class="text-highlight font-bold" style="text-decoration: underline;">
+              ${escHtml(p.name || '-')}
+            </a>
+          </td>
+          <td>${escHtml(p.model_name)}</td>
           <td>${escHtml(p.version) || '<span class="text-muted">-</span>'}</td>
-          <td>${escHtml(p.os_type) || '<span class="text-muted">-</span>'}</td>
-          <td>${hwInfo}</td>
           <td>${p.installed_at || '<span class="text-muted">-</span>'}</td>
           <td style="max-width: 220px; white-space: pre-wrap; word-break: break-all;">${escHtml(p.description) || '<span class="text-muted">-</span>'}</td>
-          <td>
-            <div class="td-actions">
-              ${editBtn}
-              ${deleteBtn}
-            </div>
-          </td>
         </tr>`;
     }).join('');
 
@@ -95,13 +84,11 @@ function renderDetail(c, products) {
         <table class="data-table">
           <thead>
             <tr>
+              <th>제품 이름</th>
               <th>제품 모델명</th>
               <th>제품 버전</th>
-              <th>설치 OS</th>
-              <th>연결 하드웨어</th>
               <th>설치일</th>
               <th>기타사항</th>
-              <th>관리</th>
             </tr>
           </thead>
           <tbody>${prodRows}</tbody>
@@ -110,7 +97,7 @@ function renderDetail(c, products) {
   }
 
   document.getElementById('content-area').innerHTML = `
-    <div class="detail-split-layout">
+    <div class="detail-split-layout" style="grid-template-columns: 440px 1fr;">
       <!-- 왼쪽 블록: 고객 기본 정보 -->
       <div class="card">
         <div class="card-header">
@@ -154,6 +141,12 @@ function renderDetail(c, products) {
                 ${c.contact_email
                   ? `<a href="mailto:${escHtml(c.contact_email)}" class="text-highlight">${escHtml(c.contact_email)}</a>`
                   : '(미입력)'}
+              </div>
+            </div>
+            <div class="detail-item" style="grid-column: 1 / -1;">
+              <div class="detail-label">기타 사항</div>
+              <div class="detail-value ${!c.description ? 'muted' : ''}" style="white-space: pre-wrap; word-break: break-all; line-height: 1.5; font-size: 13.5px; background: rgba(0,0,0,0.15); padding: 8px 12px; border-radius: 4px;">
+                ${escHtml(c.description) || '(입력된 사항 없음)'}
               </div>
             </div>
             <div class="detail-item">

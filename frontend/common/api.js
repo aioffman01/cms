@@ -4,7 +4,7 @@
  * 경로: /frontend/common/api.js
  */
 
-const API_BASE = '../../backend';
+const API_BASE = '../../backend/v1';
 
 const API = {
   /**

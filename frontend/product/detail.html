@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 판매 제품 상세</title>
+  <meta name="description" content="고객의 판매 제품 상세 정보를 확인하고 관리합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+</head>
+<body>
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">판매 제품 <span>상세 정보</span></h1>
+      <a id="btn-back" href="../customer/list.html" class="btn btn-ghost">← 고객 상세로</a>
+    </div>
+
+    <div class="content-area">
+      <div id="msg-area"></div>
+      <div id="content-area">
+        <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../common/api.js?v=8"></script>
+<script src="../common/layout.js?v=8"></script>
+<script src="detail.js?v=8"></script>
+</body>
+</html>

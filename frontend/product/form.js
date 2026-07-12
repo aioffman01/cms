@@ -28,8 +28,12 @@ if (customerId) {
     showAlert(msgArea, '관리자만 접근 가능합니다.', 'error'); return;
   }
 
-  // 하드웨어 목록 로드 (활성만)
-  await loadHardwareOptions();
+  // 대항목 세부 목록들 로드 (HW, MAGUX_VER, OS)
+  await Promise.all([
+    loadMngOptions('HW', 'model-name'),
+    loadMngOptions('MAGUX_VER', 'license'),
+    loadMngOptions('OS', 'os-type')
+  ]);
 
   if (isEdit) {
     document.getElementById('page-title').innerHTML = '판매 제품 <span>수정</span>';
@@ -42,14 +46,14 @@ if (customerId) {
   }
 })();
 
-async function loadHardwareOptions() {
-  const res = await API.get('/hardware/list.php');
+async function loadMngOptions(categoryCode, selectId) {
+  const res = await API.get('/mng_item/list.php', { category_code: categoryCode, is_use: 'Y' });
   if (!res.success) return;
-  const sel = document.getElementById('hardware-id');
-  (res.data || []).forEach(h => {
+  const sel = document.getElementById(selectId);
+  (res.data || []).forEach(item => {
     const opt = document.createElement('option');
-    opt.value       = h.id;
-    opt.textContent = `${h.model_name}  (CPU:${h.cpu_count} / DISK:${parseFloat(h.disk_tb).toFixed(1)}TB / NIC:${h.nic_count})`;
+    opt.value       = item.name; // DB의 model_name, version, os_type 컬럼에 텍스트 저장
+    opt.textContent = `${item.name} (${item.code})`;
     sel.appendChild(opt);
   });
 }
@@ -58,12 +62,12 @@ async function loadProduct() {
   const res = await API.get('/product/get.php', { id: productId });
   if (!res.success) { showAlert(msgArea, res.message, 'error'); return; }
   const p = res.data;
+  document.getElementById('product-name').value = p.name         || '';
   document.getElementById('model-name').value   = p.model_name   || '';
   document.getElementById('license').value      = p.version      || '';
   document.getElementById('os-type').value      = p.os_type      || '';
   document.getElementById('installed-at').value = p.installed_at || '';
   document.getElementById('description').value  = p.description  || '';
-  if (p.hardware_id) document.getElementById('hardware-id').value = p.hardware_id;
 
   // 고객 정보 표시
   if (p.customer_id) showCustomerInfo(p.customer_id);
@@ -82,6 +86,9 @@ async function showCustomerInfo(cid) {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
+  const productName = document.getElementById('product-name').value.trim();
+  if (!productName) { showAlert(msgArea, '제품 이름은 필수 항목입니다.', 'error'); return; }
+
   const modelName = document.getElementById('model-name').value.trim();
   if (!modelName) { showAlert(msgArea, '제품 모델명은 필수 항목입니다.', 'error'); return; }
 
@@ -92,10 +99,10 @@ form.addEventListener('submit', async (e) => {
   }
 
   const payload = {
+    name:         productName,
     model_name:   modelName,
     version:      document.getElementById('license').value.trim(),
     os_type:      document.getElementById('os-type').value.trim(),
-    hardware_id:  document.getElementById('hardware-id').value || null,
     installed_at: installedAt || null,
     description:  document.getElementById('description').value.trim(),
   };

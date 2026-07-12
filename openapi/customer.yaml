@@ -8,8 +8,8 @@ info:
     - [관리자] 고객 숨기기/표시
 
 servers:
-  - url: /backend/customer
-    description: 고객 Backend API 서버
+  - url: /backend/v1/customer
+    description: 고객 Backend API 서버 v1
 
 tags:
   - name: 고객
@@ -180,6 +180,9 @@ components:
           type: string
           format: email
           description: 담당자 이메일
+        description:
+          type: string
+          description: 기타 사항
 
     CustomerItem:
       type: object
@@ -190,6 +193,7 @@ components:
         contact_name:    { type: string }
         contact_phone:   { type: string }
         contact_email:   { type: string }
+        description:     { type: string, nullable: true }
         is_hidden:       { type: integer, enum: [0, 1] }
         created_by:      { type: integer }
         created_by_name: { type: string }

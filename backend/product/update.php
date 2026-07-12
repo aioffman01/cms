@@ -16,15 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'PUT') Response::error('PUT만 허용됩니�
 $input     = json_decode(file_get_contents('php://input'), true) ?? [];
 $id        = (int)($input['id'] ?? 0);
 $modelName = trim($input['model_name'] ?? '');
+$name      = trim($input['name'] ?? '');
 
-if ($id <= 0 || $modelName === '') Response::error('유효하지 않은 요청입니다.');
+if ($id <= 0 || $name === '' || $modelName === '') Response::error('유효하지 않은 요청입니다.');
 
 try {
     $productSQL = new ProductSQL(DB::getInstance());
     if (!$productSQL->exists($id)) Response::error('존재하지 않는 제품입니다.', 404);
 
     $productSQL->update($id, [
-        'hardware_id'  => $input['hardware_id']  ?? null,
+        'name'         => $name,
         'model_name'   => $modelName,
         'version'      => trim($input['version']      ?? ''),
         'os_type'      => trim($input['os_type']      ?? ''),

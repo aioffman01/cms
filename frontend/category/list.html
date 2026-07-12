@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CMS — 항목 관리</title>
+  <meta name="description" content="[관리자] 대항목 및 세부 항목을 범용적으로 관리합니다.">
+  <link rel="stylesheet" href="../common/style.css">
+  <style>
+    /* 스플릿 뷰 전용 고급 스타일 */
+    .split-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+      align-items: start;
+      margin-top: 16px;
+    }
+
+    @media (max-width: 1024px) {
+      .split-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* 카테고리 카드 리스트 */
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .category-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .category-card:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(20, 184, 166, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .category-card.active {
+      background: rgba(20, 184, 166, 0.08);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(20, 184, 166, 0.15);
+    }
+
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .category-code-badge {
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(20, 184, 166, 0.15);
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .category-name-txt {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .category-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .category-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.08);
+      padding-top: 8px;
+      margin-top: 4px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .status-active {
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.1);
+    }
+    .status-inactive {
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    .placeholder-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* 테이블 세부항목 코드 강조 */
+    .table-code-txt {
+      font-family: monospace;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 12.5px;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-layout">
+  <div id="sidebar-container"></div>
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">항목 <span>관리</span></h1>
+      <div class="flex gap-2">
+        <span class="badge badge-admin">관리자 전용</span>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div id="msg-area"></div>
+
+      <div class="split-layout">
+        <!-- 1. 좌측 영역: 대항목 관리 -->
+        <div class="card" style="margin-bottom: 0;">
+          <div class="card-header" style="padding-bottom: 12px;">
+            <div class="card-title">대항목 리스트</div>
+            <button class="btn btn-primary btn-sm" id="btn-add-category">+ 대항목 등록</button>
+          </div>
+          <div style="padding: 0 16px 16px;">
+            <div class="category-list" id="category-list-container">
+              <div class="loading"><div class="spinner"></div>불러오는 중...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 우측 영역: 세부 항목 관리 -->
+        <div id="item-panel-container">
+          <div class="placeholder-card">
+            좌측에서 대항목을 선택하시면 세부 항목을 관리할 수 있습니다.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- A. 대항목 등록/수정 모달 -->
+<div class="modal-overlay" id="category-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cat-modal-title" style="max-width: 480px;">
+    <div class="modal-title" id="cat-modal-title">대항목 등록</div>
+    <div class="modal-body">
+      <form id="category-form" novalidate>
+        <input type="hidden" id="category-id" value="">
+        <div class="form-group">
+          <label class="form-label" for="category-code">대항목 코드 <span class="text-accent">*</span></label>
+          <input class="form-input" type="text" id="category-code" placeholder="예: HW (영대문자, 숫자, -, _)" required>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">대항목 코드는 등록 후 수정이 어려울 수 있습니다.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="category-name">대항목 명 <span class="text-accent">*</span></label>
+          <input class="form-input" type="text" id="category-name" placeholder="예: 하드웨어 관리" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">사용 여부</label>
+          <div class="flex gap-4">
+            <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
+              <input type="radio" name="category-use" value="Y" checked>
+              <span>사용</span>
+            </label>
+            <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
+              <input type="radio" name="category-use" value="N">
+              <span>미사용</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="category-desc">설명 및 기타사항</label>
+          <textarea class="form-input" id="category-desc" rows="3" placeholder="카테고리에 대한 설명을 적어주세요" style="resize: vertical; min-height: 60px;"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="cat-modal-cancel">취소</button>
+      <button class="btn btn-primary" id="cat-modal-submit" form="category-form">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- B. 세부 항목 등록/수정 모달 -->
+<div class="modal-overlay" id="item-modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="item-modal-title" style="max-width: 480px;">
+    <div class="modal-title" id="item-modal-title">세부 항목 등록</div>
+    <div class="modal-body">
+      <form id="item-form" novalidate>
+        <input type="hidden" id="item-id" value="">
+        <div class="form-group">
+          <label class="form-label" for="item-parent-code">소속 대항목 코드</label>
+          <input class="form-input" type="text" id="item-parent-code" readonly style="background: rgba(255,255,255,0.05); color: var(--text-muted);">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="item-code">세부 항목 코드 <span class="text-accent">*</span></label>
+          <input class="form-input" type="text" id="item-code" placeholder="예: CPU (영대문자, 숫자, -, _)" required>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">최종 코드는 "대항목코드.세부항목코드" 형태로 자동 정의됩니다.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="item-name">세부 항목 명 <span class="text-accent">*</span></label>
+          <input class="form-input" type="text" id="item-name" placeholder="예: CPU 상태 점검" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">사용 여부</label>
+          <div class="flex gap-4">
+            <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
+              <input type="radio" name="item-use" value="Y" checked>
+              <span>사용</span>
+            </label>
+            <label class="member-checkbox-item" style="margin-bottom:0; cursor:pointer;">
+              <input type="radio" name="item-use" value="N">
+              <span>미사용</span>
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="item-desc">설명 및 기타사항</label>
+          <textarea class="form-input" id="item-desc" rows="3" placeholder="세부 항목에 대한 기타 세부 사항을 적어주세요" style="resize: vertical; min-height: 60px;"></textarea>
+        </div>
+      </form>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="item-modal-cancel">취소</button>
+      <button class="btn btn-primary" id="item-modal-submit" form="item-form">저장</button>
+    </div>
+  </div>
+</div>
+
+<script src="../common/api.js?v=8"></script>
+<script src="../common/layout.js?v=8"></script>
+<script src="list.js?v=8"></script>
+</body>
+</html>

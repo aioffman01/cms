@@ -51,8 +51,8 @@ function renderSidebar(user, activePage) {
     <li class="nav-item ${activePage === 'member-manage' ? 'active' : ''}">
       <a href="../member/manage.html"><span class="nav-icon">◈</span><span>회원 관리</span></a>
     </li>
-    <li class="nav-item ${activePage === 'hardware-list' ? 'active' : ''}">
-      <a href="../hardware/list.html"><span class="nav-icon">⬡</span><span>하드웨어 관리</span></a>
+    <li class="nav-item ${activePage === 'category-list' ? 'active' : ''}">
+      <a href="../category/list.html"><span class="nav-icon">⚙</span><span>항목 관리</span></a>
     </li>
     ` : ''}
   `;
